@@ -428,4 +428,17 @@ const _rf3=renderFeed;renderFeed=()=>{_rf3();document.querySelectorAll("#feed .i
 
 $("cpLink").onclick=()=>{const v=($("link").value||$("url").value||"").trim();if(!v){toast("Elige un artículo primero");return}
  navigator.clipboard.writeText(v).then(()=>{const b=$("cpLink");b.classList.add("ok");setTimeout(()=>b.classList.remove("ok"),1200);toast("Enlace copiado")},()=>toast("No se pudo copiar"))};
+
+// ---- Noticias al instante: además del RSS (que laciutat.cat regenera cada ~5 min), se buscan los IDs siguientes ----
+const idOf=l=>+((String(l).match(/_(\d+)_\d+\.html/)||[])[1]||0);const LIVE=new Map();
+function mergeLive(notify){const known=new Set(ITEMS.map(x=>idOf(x.link)));for(const id of [...LIVE.keys()])if(known.has(id)&&!ITEMS.find(x=>x.live&&idOf(x.link)==id))LIVE.delete(id);
+ const add=[...LIVE.values()].filter(x=>!known.has(x.id));if(!add.length)return;
+ ITEMS=[...add,...ITEMS].sort((a,b)=>new Date(b.date)-new Date(a.date)||idOf(b.link)-idOf(a.link));
+ if(notify){add.forEach(x=>NEW.add(x.link));toast(add.length==1?"1 artículo nuevo":add.length+" artículos nuevos")}renderFeed()}
+let probing=false;async function probe(){if(probing||document.hidden||!ITEMS.length)return;probing=true;
+ try{const known=new Set(ITEMS.map(x=>idOf(x.link)));const max=Math.max(...known);const ids=[];for(let i=max-8;i<=max+6;i++)if(!known.has(i))ids.push(i);
+  const r=await fetch("/api/probe?ids="+ids.join(",")+"&t="+Date.now(),{cache:"no-store"});if(!r.ok||!(r.headers.get("content-type")||"").includes("json"))return;
+  const {items}=await r.json();let fresh=0;items.forEach(x=>{if(!LIVE.has(x.id)){LIVE.set(x.id,x);fresh++}});if(fresh)mergeLive(true)}catch{}finally{probing=false}}
+const _lf2=loadFeed;loadFeed=async()=>{await _lf2();mergeLive(false)};
+setInterval(probe,10000);setTimeout(probe,4000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)probe()});
 </script></body></html>
