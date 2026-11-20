@@ -200,7 +200,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 <div id="toast" role="status"><i>✓</i><span></span></div>
 <script>
 const GLYPH=`<path d="M45.4446 44.386C44.1123 44.386 43.0117 43.9836 42.2008 43.1211C41.3319 42.2587 40.9264 41.2813 40.9264 40.1314C40.9264 38.924 41.3319 37.9466 42.2008 37.1417C43.0697 36.3368 44.1123 35.9343 45.4446 35.9343C46.7769 35.9343 47.8775 36.3368 48.7464 37.1417C49.5574 37.9466 50.0208 38.924 50.0208 40.1314C50.0208 41.3388 49.6153 42.3162 48.7464 43.1211C47.8775 43.9836 46.7769 44.386 45.4446 44.386ZM42.4904 32.6571L41.0422 11.2115H49.847L48.3989 32.6571H42.4904Z" fill="white"/><path d="M7.09753 27.885C7.09753 17.9384 14.6859 11.2115 23.6644 11.2115C33.2802 11.2115 37.5667 17.3634 38.6094 21.963L31.89 24.0903C31.3686 21.9055 29.3412 18.1684 23.7224 18.1684C19.4358 18.1684 14.57 21.2156 14.57 27.9425C14.57 33.922 19.0303 37.3717 23.7803 37.3717C29.3412 37.3717 31.5424 33.692 32.1796 31.3922L39.0149 33.347C37.9722 37.7166 33.7436 44.501 23.7803 44.501C14.5121 44.386 7.09753 37.8316 7.09753 27.885Z" fill="white"/>`,CIRCLE="M58.4202 28C58.4202 43.4661 45.7922 56 30.2101 56C14.6279 56 2 43.4661 2 28C2 12.5339 14.6279 0 30.2101 0C45.7922 0 58.4202 12.5339 58.4202 28Z";
-const ACC=[["tarragona","Tarragona","#E5007E"],["reus","Reus","#0E6AB3"],["vilaseca","Vila-seca","#CAB22A"],["cambrils","Cambrils","#42C0F0"],["salou","Salou","#333280"],["ebre","Terres de l'Ebre","#E14536"],["lleida","Lleida","#4C9B42"],["girona","Girona","#D89220"],["penedes","Penedès","#6D3F0E"],["garraf","Garraf","#1C8D87"],["pirineus","Pirineus","#115429"],["catalunyacentral","Catalunya Central","#B57CB1"],["andorra","Andorra",null],["barcelona","Barcelona","#961A7A"],["general","General (@diarilaciutat)","#030406"]];
+const ACC=[["tarragona","Tarragona","#E5007E"],["reus","Reus","#0E6AB3"],["vilaseca","Vila-seca","#CAB22A"],["cambrils","Cambrils","#42C0F0"],["salou","Salou","#333280"],["ebre","Terres de l'Ebre","#E14536"],["lleida","Lleida","#4C9B42"],["girona","Girona","#D89220"],["penedes","Penedès","#6D3F0E"],["garraf","Garraf","#1C8D87"],["catalunyacentral","Catalunya Central","#B57CB1"],["andorra","Andorra",null],["barcelona","Barcelona","#961A7A"],["general","General (@diarilaciutat)","#030406"]];
 const $=id=>document.getElementById(id);
 ACC.forEach(([k,n])=>$("acc").add(new Option(n,k)));
 const SPEC={post:{W:1080,H:1440,bb:1223,bt:896,pcx:81,pt:886,pk:1,lx:132,lct:925,ls:40,tx:86,tb:1028,ts:51,tp:68,tw:975,wr:1059,wct:1363,ws:29,wt:4,ll:912,lt:47.5,ld:120},
@@ -243,12 +243,12 @@ const ED={laciutatdetarragona:["tarragona","Tarragona",["Reus","Vila-seca","Camb
  laciutatdelpenedesgarraf:["penedes","Penedès",["El Vendrell","Calafell","Cunit","Vilafranca del Penedès","Sant Sadurní d'Anoia","Sitges","Vilanova i la Geltrú","Sant Pere de Ribes"]],
  "laciutat-de-catalunya-central":["catalunyacentral","Catalunya Central",["Manresa","Igualada","Solsona","Vic"]],laciutatandorra:["andorra","Andorra",["Andorra la Vella","Escaldes-Engordany","Encamp","La Massana","Ordino","Canillo","Sant Julià de Lòria"]],
  laciutatdebarcelona:["barcelona","Barcelona",["L'Hospitalet de Llobregat","Cornellà de Llobregat","El Prat de Llobregat","Sabadell","Granollers","Badalona","Santa Coloma de Gramenet","Sant Boi de Llobregat","Viladecans","Gavà","Barcelona"]]};
-const ACC_OF_PLACE={"Reus":"reus","Vila-seca":"vilaseca","La Pineda":"vilaseca","Cambrils":"cambrils","Salou":"salou","Sitges":"garraf","Vilanova i la Geltrú":"garraf","Sant Pere de Ribes":"garraf","Balaguer":"lleida","Tremp":"pirineus","La Seu d'Urgell":"pirineus"};
+const ACC_OF_PLACE={"Reus":"reus","Vila-seca":"vilaseca","La Pineda":"vilaseca","Cambrils":"cambrils","Salou":"salou","Sitges":"garraf","Vilanova i la Geltrú":"garraf","Sant Pere de Ribes":"garraf","Balaguer":"lleida","Tremp":"lleida","La Seu d'Urgell":"lleida"};
 function firstPlace(list,txt){let best=null,bi=1e9;for(const p of list){const m=new RegExp("(^|[^\\p{L}])"+p.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"(?![\\p{L}])","iu").exec(txt);if(m&&m.index<bi){bi=m.index;best=p}}return best}
 function guess(path,title,sub){const seg=path.replace(/^\/(es|ca)\//,"/").split("/").filter(Boolean),root=seg[0]||"",subsec=seg.length>2?seg[1]:"";
  if(GEN[root])return {acc:"general",loc:GEN[root]};
  const ed=ED[root];if(!ed)return {acc:"general",loc:firstPlace(["Tarragona","Reus","Barcelona","Lleida","Girona","Andorra"],title+" "+sub)||"Catalunya"};
- if(root=="laciutatdelleida"&&/pirineus|seu|tremp/.test(subsec))return {acc:"pirineus",loc:{"la-seu-durgell":"La Seu d'Urgell",tremp:"Tremp"}[subsec]||"Pirineus"};
+ if(root=="laciutatdelleida"&&/pirineus|seu|tremp/.test(subsec))return {acc:"lleida",loc:{"la-seu-durgell":"La Seu d'Urgell",tremp:"Tremp"}[subsec]||"Pirineus"};
  const loc=firstPlace(ed[2],title)||firstPlace(ed[2],sub)||ed[1];let acc=ACC_OF_PLACE[loc]||ed[0];
  if(root=="laciutatdelpenedesgarraf"&&/garraf|sitges|vilanova|ribes/.test(subsec))acc="garraf";
  return {acc,loc}}
@@ -318,7 +318,7 @@ function renderFeed(){const ed=$("ed").value,L=ITEMS.filter(x=>!ed||x.cats[0]==e
 $("feed").addEventListener("click",async e=>{const it=e.target.closest(".it");if(!it)return;const l=it.dataset.l;
  if(e.target.closest(".tick")){done.has(l)?done.delete(l):done.add(l);saveDone();renderFeed();return}
  if(e.target.closest(".sel"))await pick(ITEMS.find(x=>x.link==l))});
-const SUBACC={"Reus":"reus","Cambrils":"cambrils","Salou":"salou","Vila-seca":"vilaseca","La Seu d'Urgell":"pirineus","Pirineus":"pirineus","Tremp":"pirineus","Vilanova i la Geltrú":"garraf","Sitges":"garraf","Sant Pere de Ribes":"garraf","Garraf":"garraf"};
+const SUBACC={"Reus":"reus","Cambrils":"cambrils","Salou":"salou","Vila-seca":"vilaseca","La Seu d'Urgell":"lleida","Pirineus":"lleida","Tremp":"lleida","Vilanova i la Geltrú":"garraf","Sitges":"garraf","Sant Pere de Ribes":"garraf","Garraf":"garraf"};
 const NOTPLACE=/^(La Ciutat|Opinió|Política|Cultura|Entrevistes|Catalunya|Espanya|Món|Baix |Alt |Tarragonès|Regió|Parroquies|Nacional|Costa Brava|Penedès|Catalunya Central)/;
 function autoOf(x){const path=new URL(x.link).pathname;let g=guess(path,x.title,x.sub);
  const top=x.cats[0]||"";if(/^(Catalunya|Espanya|Món)$/.test(top))g={acc:"general",loc:top};
