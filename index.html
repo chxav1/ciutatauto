@@ -322,7 +322,9 @@ const SUBACC={"Reus":"reus","Cambrils":"cambrils","Salou":"salou","Vila-seca":"v
 const NOTPLACE=/^(La Ciutat|Opinió|Política|Cultura|Entrevistes|Catalunya|Espanya|Món|Baix |Alt |Tarragonès|Regió|Parroquies|Nacional|Costa Brava|Penedès|Catalunya Central)/;
 function autoOf(x){const path=new URL(x.link).pathname;let g=guess(path,x.title,x.sub);
  const top=x.cats[0]||"";if(/^(Catalunya|Espanya|Món)$/.test(top))g={acc:"general",loc:top};
- else{const sub=x.cats.find((c,i)=>i>0&&!NOTPLACE.test(c));if(sub&&/^La Ciutat/.test(top)){g.loc=sub;if(SUBACC[sub])g.acc=SUBACC[sub]}}return g}
+ else{const sub=x.cats.find((c,i)=>i>0&&!NOTPLACE.test(c));if(sub&&/^La Ciutat/.test(top)){g.loc=sub;if(SUBACC[sub])g.acc=SUBACC[sub]}}
+ if(g.acc=="general"&&!/^(Catalunya|Espanya|Món)$/.test(top)){const ed=x.cats.find(c=>EDN[c]);if(ed){g.acc=EDN[ed];g.loc=(ACC.find(a=>a[0]==g.acc)||[])[1]||g.loc}}return g}
+const EDN={"La Ciutat de Tarragona":"tarragona","La Ciutat de Barcelona":"barcelona","La Ciutat de Lleida":"lleida","La Ciutat de Girona":"girona","La Ciutat del Penedès-Garraf":"penedes","La Ciutat de les Terres de l'Ebre":"ebre","La Ciutat de Catalunya Central":"catalunyacentral","La Ciutat d'Andorra":"andorra"};
 // nombre corto de la cuenta para la lista (p. ej. L'Hospitalet -> Barcelona)
 function accLabel(x){try{const g=autoOf(x);if(g.acc=="general")return x.cats[0]&&/^(Catalunya|Espanya|Món)$/.test(x.cats[0])?x.cats[0]:"General";return (ACC.find(a=>a[0]==g.acc)||[])[1]||g.loc}catch{return x.cats.slice(-1)[0]||""}}
 async function pick(x){cur=x.link;renderFeed();$("url").value=x.link;$("msg").textContent="";
