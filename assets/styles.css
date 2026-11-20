@@ -142,7 +142,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 @keyframes vspin{to{transform:rotate(360deg)}}
 .icobtn.sq{width:36px;height:36px;padding:0;justify-content:center;flex:none}
 .icobtn.ok{border-color:#1f9d55;color:#1f9d55}
-input#q.qs{display:block;box-sizing:border-box;width:auto;flex:none;height:42px;margin:0 16px 12px;padding:0 14px 0 40px;font-size:14px;line-height:42px;border:1px solid var(--line,#e7e5ea);border-radius:12px;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2377707e' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='7' cy='7' r='5.5'/%3E%3Cpath d='m11.2 11.2 3.3 3.3'/%3E%3C/svg%3E") no-repeat 14px center;transition:border-color .15s,background-color .15s,box-shadow .15s}
+input#q.qs{display:block;box-sizing:border-box;width:auto;flex:none;height:42px;margin:14px 16px;padding:0 14px 0 40px;font-size:14px;line-height:42px;border:1px solid var(--line,#e7e5ea);border-radius:12px;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2377707e' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='7' cy='7' r='5.5'/%3E%3Cpath d='m11.2 11.2 3.3 3.3'/%3E%3C/svg%3E") no-repeat 14px center;transition:border-color .15s,background-color .15s,box-shadow .15s}
 input#q.qs:focus{outline:none;background-color:var(--field);border-color:var(--p,#E5007E);box-shadow:0 0 0 3px rgba(229,0,126,.12)}
 input#q.qs::placeholder{color:#8a8590}
 
@@ -349,3 +349,11 @@ body.simple .quick .btn{flex:1 1 180px;max-width:280px}
 @media(max-width:640px){.smp{order:2}body.simple .cmd #cpLink{display:none}}
 @media(max-width:1000px){body.simple .prev{align-items:stretch}body.simple .prev>div{display:flex;flex-direction:column}body.simple .prev .cv{margin-top:auto}}
 @media(max-width:640px){.top .smp{margin-left:auto}.top #themeBtn{margin-left:0}}
+
+.it.done{background:color-mix(in srgb,var(--c,transparent) 7%,transparent)}
+.it.done:hover{background:color-mix(in srgb,var(--c,transparent) 12%,transparent)}
+html[data-theme=dark] .it.done{background:color-mix(in srgb,var(--c,transparent) 12%,transparent)}
+.who-in .hi{margin:0 0 10px;font-size:clamp(28px,4.4vw,44px);font-weight:600;letter-spacing:-.025em;line-height:1.1;color:var(--ink);max-width:16em;text-align:center}
+.who-in .hi span{display:inline-block;opacity:0;transform:translateY(.45em);filter:blur(6px);animation:hi-in .6s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--w)*70ms + .15s)}
+@keyframes hi-in{to{opacity:1;transform:none;filter:none}}
+.who-in h2#whoT{font-size:15px;font-weight:500;color:var(--mut);letter-spacing:0;margin:0 0 40px;opacity:0;animation:i-fade .5s ease .7s forwards}

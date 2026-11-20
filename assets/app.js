@@ -123,7 +123,7 @@ const imgURL=u=>u?"https://images.weserv.nl/?w=140&h=140&fit=cover&url="+encodeU
 const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function ago(d){const m=Math.round((Date.now()-new Date(d))/6e4);return m<1?"ahora":m<60?m+" min":m<1440?Math.floor(m/60)+" h":new Date(d).toLocaleDateString("es-ES")}
 function renderFeed(){const ed=$("ed").value,L=ITEMS.filter(x=>!ed||x.cats[0]==ed);
- $("feed").innerHTML=L.map((x,i)=>`<div class="it${done.has(x.link)?" done":""}${cur==x.link?" cur":""}" data-l="${esc(x.link)}">
+ $("feed").innerHTML=L.map((x,i)=>`<div class="it${done.has(x.link)?" done":""}${cur==x.link?" cur":""}" data-l="${esc(x.link)}"${(()=>{const m=markOf(x.link),p=m&&profOf(m.by);return p?` style="--c:${p.color}"`:""})()}>
   <img loading="lazy" src="${imgURL(x.img)}" alt="">
   <div class="tx"><div class="tl">${esc(x.title)}</div><div class="mt">${ago(x.date)} · ${esc(accLabel(x))}</div></div>${statusHTML(x)}</div>`).join("")||'<p class="mut">Sin artículos</p>'}
 function statusHTML(x){const m=markOf(x.link),p=m&&profOf(m.by);
