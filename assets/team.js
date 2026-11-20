@@ -126,5 +126,18 @@ try{setSimple(!!localStorage.getItem("cs_simple"))}catch{}
   const n=Math.max(0,Math.min(max,tgt+dy));if(n==tgt&&(n==0||n==max))return;e.preventDefault();tgt=n;if(!raf)raf=requestAnimationFrame(step)},{passive:false});
  el.addEventListener("scroll",()=>{if(!raf)tgt=null},{passive:true})})();
 
+// --- sonidos discretos (sintetizados, volumen bajo) ---
+const SND={enter:[[523.25,0,.5],[783.99,.09,.6],[1046.5,.18,.8]],done:[[987.77,0,.45],[1479.98,.08,.7]],undo:[[659.25,0,.35],[493.88,.07,.45]],tap:[[1760,0,.12]],save:[[783.99,0,.35],[987.77,.07,.35],[1318.5,.14,.6]],copy:[[1318.5,0,.18]]};
+let sndT=0;function snd(k){const n=SND[k];if(!n||Date.now()-sndT<60)return;sndT=Date.now();try{unlock();if(!AC)return;const t=AC.currentTime+.01,out=AC.createGain();out.gain.value=k=="tap"||k=="copy"?.05:.085;out.connect(AC.destination);
+ n.forEach(([f,d,len])=>{[1,2].forEach((h,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type=i?"triangle":"sine";o.frequency.value=f*h;const v=i?.18:1;
+  g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(v,t+d+.008);g.gain.exponentialRampToValueAtTime(.0001,t+d+len);o.connect(g).connect(out);o.start(t+d);o.stop(t+d+len+.05)})})}catch{}}
+window.snd=snd;
+{const _pk=pick;pick=async(...a)=>{snd("tap");return _pk(...a)};}
+{const _cw=closeWho;closeWho=pick=>{if(pick)snd("enter");return _cw(pick)};}
+{const _sm=window.setMark;window.setMark=async(l,on)=>{const b=!!markOf(l);await _sm(l,on);if(!!markOf(l)!=b)snd(on?"done":"undo")};}
+{const _sv=save;save=(...a)=>{snd("save");return _sv(...a)};}
+{const _sf=shareFiles;shareFiles=async f=>{const r=await _sf(f);if(r)snd("save");return r};}
+{const _cp=cp;cp=(...a)=>{snd("copy");return _cp(...a)};}
+
 // --- inicio ---
-(async()=>{try{ME=localStorage.getItem(ME_KEY)}catch{}await pull();if(!me()){setTimeout(openWho,ME===null?1700:0)}else{setLang(me().lang);refreshMe()}refreshMark()})();
+(async()=>{try{ME=localStorage.getItem(ME_KEY)}catch{}await pull();if(me()){setLang(me().lang);refreshMe()}setTimeout(openWho,1700);refreshMark()})();
