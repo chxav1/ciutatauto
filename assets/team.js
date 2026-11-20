@@ -32,12 +32,14 @@ document.querySelector('#wpost .btn').addEventListener("click",()=>{const l=$("l
 function refreshMe(){const p=me();$("meAv").textContent=ini(p&&p.name);$("meAv").style.setProperty("--c",p?p.color:"#9a9da5");$("meName").textContent=p?p.name:"";
  if(p&&p.lang!==LANG)setLang(p.lang)}
 function renderWho(){const g=$("whoGrid");$("who").classList.toggle("editing",editing);
- g.innerHTML=PROFILES.map(p=>`<button class="pf" data-id="${p.id}" style="--c:${p.color}"><span class="tile">${esc(ini(p.name))}</span>${esc(p.name)}</button>`).join("")+
-  `<button class="pf add" id="pfAdd"><span class="tile">+</span>${tr("Añadir perfil")}</button>`;
+ g.innerHTML=PROFILES.map((p,i)=>`<button class="pf" data-id="${p.id}" style="--c:${p.color};--i:${i}"><span class="tile">${esc(ini(p.name))}</span>${esc(p.name)}</button>`).join("")+
+  `<button class="pf add" id="pfAdd" style="--i:${PROFILES.length}"><span class="tile">+</span>${tr("Añadir perfil")}</button>`;
  $("whoEdit").textContent=tr(editing?"Listo":"Gestionar perfiles");$("whoEdit").classList.toggle("hide",!PROFILES.length)}
-function openWho(){editing=false;renderWho();$("who").classList.remove("hide")}
+let whoT=0;function openWho(){editing=false;clearTimeout(whoT);const w=$("who");w.classList.remove("leave");renderWho();w.classList.remove("hide");w.classList.add("show");document.body.classList.add("whoopen");whoT=setTimeout(()=>w.classList.remove("show"),900)}
+function closeWho(pick){const w=$("who");clearTimeout(whoT);w.classList.remove("show");if(pick)pick.classList.add("pick");w.classList.add("leave");document.body.classList.remove("whoopen");
+ whoT=setTimeout(()=>{w.classList.add("hide");w.classList.remove("leave");w.querySelectorAll(".pick").forEach(x=>x.classList.remove("pick"));document.body.classList.add("enter");setTimeout(()=>document.body.classList.remove("enter"),700)},480)}
 $("whoGrid").onclick=e=>{const b=e.target.closest(".pf");if(!b)return;if(b.id=="pfAdd")return openEditor(null);const p=PROFILES.find(x=>x.id==b.dataset.id);if(!p)return;
- if(editing)return openEditor(p);ME=p.id;try{localStorage.setItem(ME_KEY,ME)}catch{}refreshMe();$("who").classList.add("hide");renderFeed();refreshMark()};
+ if(editing)return openEditor(p);ME=p.id;try{localStorage.setItem(ME_KEY,ME)}catch{}refreshMe();closeWho(b);renderFeed();refreshMark()};
 $("whoEdit").onclick=()=>{editing=!editing;renderWho()};$("meBtn").onclick=openWho;
 function openEditor(p){peId=p?p.id:null;peLang=p?p.lang:LANG;peColor=p?p.color:null;$("peName").value=p?p.name:"";$("peT").textContent=tr(p?"Editar perfil":"Nuevo perfil");
  $("peDel").classList.toggle("hide",!p);$("peErr").textContent="";
@@ -53,7 +55,7 @@ $("peName").oninput=peAv;$("peCancel").onclick=()=>$("pedit").classList.add("hid
 $("peForm").onsubmit=async e=>{e.preventDefault();const btn=$("peSave");btn.disabled=true;$("peErr").textContent="";
  try{const j=await api({type:"profile",profile:{id:peId,name:$("peName").value,color:peColor,lang:peLang}});$("pedit").classList.add("hide");
   if(!peId||peId==ME){ME=j.id;try{localStorage.setItem(ME_KEY,ME)}catch{}setLang(peLang);refreshMe()}
-  if(!peId){$("who").classList.add("hide")}else renderWho();toast("Perfil guardado")}catch(err){$("peErr").textContent=err.message;renderColors()}finally{btn.disabled=false}};
+  if(!peId){closeWho()}else renderWho();toast("Perfil guardado")}catch(err){$("peErr").textContent=err.message;renderColors()}finally{btn.disabled=false}};
 $("peDel").onclick=async()=>{if(!peId)return;const p=PROFILES.find(x=>x.id==peId);if(!confirm((LANG=="ca"?"Eliminar el perfil de ":"¿Eliminar el perfil de ")+(p?p.name:"")+"?"))return;
  try{await api({type:"deleteProfile",id:peId});if(peId==ME){ME=null;try{localStorage.removeItem(ME_KEY)}catch{}}$("pedit").classList.add("hide");renderWho();toast("Perfil eliminado")}catch(err){$("peErr").textContent=err.message}};
 addEventListener("keydown",e=>{if(e.key=="Escape"&&!$("pedit").classList.contains("hide"))$("pedit").classList.add("hide")});
@@ -62,7 +64,7 @@ addEventListener("keydown",e=>{if(e.key=="Escape"&&!$("pedit").classList.contain
 $("frameSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;[...$("frameSeg").children].forEach(x=>x.classList.toggle("on",x==b));$("frame").value=b.dataset.v;$("frame").dispatchEvent(new Event("change"))};
 
 // --- móvil: guardar directamente en la galería (hoja de compartir de iOS / Android) ---
-const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Mac/.test(navigator.platform));
+const isMobile=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Mac/.test(navigator.platform));
 const fileOf=(blob,name)=>new File([blob],name,{type:blob.type||"application/octet-stream"});
 const canvasBlob=id=>new Promise(r=>$(id).toBlob(r,"image/jpeg",.95));
 let pendingFiles=null;
@@ -77,6 +79,22 @@ if(isMobile){
   if(isVid()){const b=await withLoader([$("dlStory"),$("dlBoth")],getVideo);files.push(fileOf(b,vname(b)))}else files.push(fileOf(await canvasBlob("cstory"),`laciutat_HISTORIA_${Date.now()}.jpg`));
   if(!await shareFiles(files))files.forEach(f=>save(f,f.name))}catch(e){toast(e.message||"No se pudo descargar")}};
 }
+
+// --- tema claro / oscuro ---
+function setTheme(t){const d=document.documentElement;d.dataset.theme=t;try{localStorage.setItem("cs_theme",t)}catch{}document.querySelector('meta[name=theme-color]')?.setAttribute("content",t=="dark"?"#16171b":"#ffffff")}
+document.addEventListener("click",e=>{if(e.target.closest("#themeBtn,[data-theme-toggle]"))setTheme(document.documentElement.dataset.theme=="dark"?"light":"dark")});
+
+// --- vista previa flotante en móvil mientras ajustas ---
+(()=>{const pip=$("pip"),pc=pip.querySelector("canvas"),lb=pip.querySelector("span"),prev=document.querySelector(".prev"),insp=document.querySelector(".insp");
+ let kind="post",prevVis=true,inspVis=false,last=0;const mq=matchMedia("(max-width:1000px)");
+ const src=()=>{if(kind=="post"&&$("wpost").classList.contains("hide"))kind="story";return $(kind=="post"?"cpost":"cstory")};
+ const want=()=>mq.matches&&!$("res").classList.contains("hide")&&!prevVis&&inspVis;
+ function draw(ts){if(pip.classList.contains("on")){if(ts-last>66){last=ts;const c=src(),w=pc.width,h=Math.round(w*c.height/c.width);if(pc.height!=h)pc.height=h;pc.getContext("2d").drawImage(c,0,0,w,h);lb.textContent=tr(kind=="post"?"Post":"Historia")}requestAnimationFrame(draw)}}
+ function upd(){const on=want();if(on==pip.classList.contains("on"))return;pip.classList.toggle("on",on);if(on)requestAnimationFrame(draw)}
+ const chk=()=>{const a=prev.getBoundingClientRect(),b=insp.getBoundingClientRect(),H=innerHeight;prevVis=a.bottom>a.height*.35+70&&a.top<H-a.height*.35;inspVis=b.top<H&&b.bottom>0;upd()};
+ addEventListener("scroll",chk,{passive:true});addEventListener("resize",chk);
+ pip.onclick=()=>{if(!$("wpost").classList.contains("hide")){kind=kind=="post"?"story":"post";last=0}};
+})();
 
 // --- inicio ---
 (async()=>{try{ME=localStorage.getItem(ME_KEY)}catch{}await pull();if(!me()){setTimeout(openWho,ME===null?1700:0)}else{setLang(me().lang);refreshMe()}refreshMark()})();

@@ -152,20 +152,16 @@ async function pick(x){cur=x.link;renderFeed();$("url").value=x.link;$("msg").te
 async function imageSrc(u){if(!u)return"";try{const r=await fetch("/api/image?url="+encodeURIComponent(u));if(r.ok&&(r.headers.get("content-type")||"").startsWith("image"))return await toDataURL(await r.blob())}catch{}
  return await toDataURL(await viaProxy(u,true))}
 $("ed").onchange=renderFeed;$("frame").onchange=draw;
-const setFold=f=>{$("feedBody").classList.toggle("hide",f);$("arrow").textContent=f?"▸":"▾";try{localStorage.setItem("ac_fold",f?"1":"")}catch{}};
-$("fold").onclick=()=>setFold(!$("feedBody").classList.contains("hide"));try{setFold(!!localStorage.getItem("ac_fold"))}catch{}
 $("reload").onclick=loadFeed;loadFeed();setInterval(()=>loadFeed(),15000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadFeed()});
 
 
 // ---- Ciutat Studio · capa de interfaz ----
-setTimeout(()=>{$("intro").classList.add("out");setTimeout(()=>$("intro").remove(),700)},1900);
+setTimeout(()=>{$("intro").classList.add("out");document.body.classList.add("enter");setTimeout(()=>{$("intro").remove();document.body.classList.remove("enter")},750)},2150);
 function toast(m){const t=$("toast");t.querySelector("span").textContent=m;t.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("on"),1800)}
 const _draw=draw;draw=async(...a)=>{const r=$("res");r.classList.add("busyc");try{return await _draw(...a)}finally{r.classList.remove("busyc");$("htitle").textContent=$("title").value}};
 const _dl=dl;dl=(id,n)=>{_dl(id,n);toast(n=="POST"?"Post descargado":"Historia descargada")};
 const _cp=cp;cp=(id,b)=>{_cp(id,b);toast(id=="copy"?"Copy copiado":"Enlace copiado")};
 new MutationObserver(()=>{const g=$("go");g.classList.toggle("busy",g.disabled)}).observe($("go"),{attributes:true,attributeFilter:["disabled"]});
-new MutationObserver(()=>document.body.classList.toggle("folded",$("feedBody").classList.contains("hide"))).observe($("feedBody"),{attributes:true,attributeFilter:["class"]});
-document.body.classList.toggle("folded",$("feedBody").classList.contains("hide"));
 $("url").addEventListener("keydown",e=>{if(e.key=="Enter")$("go").click()});
 
 

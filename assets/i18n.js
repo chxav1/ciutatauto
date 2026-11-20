@@ -1,5 +1,6 @@
 // Idioma de la interfaz (castellano por defecto, catalán opcional). Las imágenes y el copy no se traducen.
 const CA={
+"Elige tu perfil para empezar":"Tria el teu perfil per començar","Herramienta interna de redes sociales":"Eina interna de xarxes socials","Posts e historias de La Ciutat":"Posts i històries de La Ciutat","Modo claro / oscuro":"Mode clar / fosc","Cambiar entre modo claro y oscuro":"Canviar entre mode clar i fosc",
 "Pega el enlace de un artículo de laciutat.cat":"Enganxa l'enllaç d'un article de laciutat.cat","Generar":"Generar","Artículos":"Articles",
 "Últimos artículos":"Últims articles","Todas las ediciones":"Totes les edicions","Buscar artículos":"Cercar articles","Recargar":"Recarregar","Cargando…":"Carregant…",
 "Elige un artículo":"Tria un article","Selecciona una noticia de la lista o pega su enlace arriba. El post, la historia y el copy se generan al momento.":"Selecciona una notícia de la llista o enganxa'n l'enllaç a dalt. El post, la història i el copy es generen a l'instant.",
