@@ -108,5 +108,23 @@ function setSimple(on){document.body.classList.toggle("simple",on);const b=$("si
 $("simpleBtn").onclick=()=>{const on=!document.body.classList.contains("simple");setSimple(on);toast(on?"Modo simple":"Modo completo")};
 try{setSimple(!!localStorage.getItem("cs_simple"))}catch{}
 
+// --- previsualizaciones: siempre caben en pantalla (escritorio) ---
+(()=>{const st=document.querySelector(".stage"),pv=document.querySelector(".prev"),mq=matchMedia("(min-width:1001px)");
+ function fit(){if(!mq.matches||$("res").classList.contains("hide")){pv.style.removeProperty("--ph");return}
+  const cs=getComputedStyle(st),q=document.querySelector(".quick"),qh=q&&q.offsetParent?q.offsetHeight+18:0,sh=document.querySelector(".stagehead");
+  const av=st.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-sh.offsetHeight-20-qh-28-12-38-11-20;
+  const one=$("wpost").classList.contains("hide"),wb=one?pv.clientWidth/.5625:(pv.clientWidth-28)/1.3125;
+  pv.style.setProperty("--ph",Math.max(220,Math.floor(Math.min(av,wb)))+"px")}
+ addEventListener("resize",fit);new ResizeObserver(fit).observe(document.querySelector(".stagehead"));new ResizeObserver(fit).observe(pv);
+ new MutationObserver(fit).observe(document.body,{subtree:true,attributes:true,attributeFilter:["class"]});window.fitPrev=fit;fit()})();
+
+// --- scroll suave en la lista de noticias ---
+(()=>{const el=$("feedBody");let tgt=null,raf=0;
+ function step(){const d=tgt-el.scrollTop;if(Math.abs(d)<.6){el.scrollTop=tgt;tgt=null;raf=0;return}el.scrollTop+=d*.16;raf=requestAnimationFrame(step)}
+ el.addEventListener("wheel",e=>{if(e.ctrlKey||matchMedia("(prefers-reduced-motion:reduce)").matches)return;const max=el.scrollHeight-el.clientHeight;if(max<=0)return;
+  const dy=e.deltaMode==1?e.deltaY*32:e.deltaMode==2?e.deltaY*el.clientHeight:e.deltaY;if(tgt==null)tgt=el.scrollTop;
+  const n=Math.max(0,Math.min(max,tgt+dy));if(n==tgt&&(n==0||n==max))return;e.preventDefault();tgt=n;if(!raf)raf=requestAnimationFrame(step)},{passive:false});
+ el.addEventListener("scroll",()=>{if(!raf)tgt=null},{passive:true})})();
+
 // --- inicio ---
 (async()=>{try{ME=localStorage.getItem(ME_KEY)}catch{}await pull();if(!me()){setTimeout(openWho,ME===null?1700:0)}else{setLang(me().lang);refreshMe()}refreshMark()})();

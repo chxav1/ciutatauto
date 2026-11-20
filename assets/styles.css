@@ -362,7 +362,7 @@ html[data-theme=dark] .it.done{background:color-mix(in srgb,var(--c,transparent)
 #res.hide~.quick{display:none!important}
 @media(min-width:1001px){
  .prev{container-type:inline-size;--ph:min(calc(100vh - 290px),calc((100cqw - 28px)/1.3125));flex-wrap:nowrap;align-items:flex-start;max-width:none}
- body.simple .prev{--ph:min(calc(100vh - 346px),calc((100cqw - 28px)/1.3125))}
+ 
  .prev>div{flex:none;max-width:none}
  #wpost .cv{width:calc(var(--ph)*.75)}#wstory .cv{width:calc(var(--ph)*.5625)}
  .prev .cv canvas{display:block;width:100%;height:auto}
@@ -374,3 +374,5 @@ html[data-theme=dark] .it.done{background:color-mix(in srgb,var(--c,transparent)
 .sh-r #dlBoth{height:38px;border-radius:10px;background:var(--p);border-color:var(--p);color:#fff}
 .sh-r #dlBoth:hover{background:#cc0070;border-color:#cc0070;color:#fff}
 @media(max-width:1000px){.sh-r{justify-content:space-between}.sh-r .seg{order:-1}}
+
+@media(min-width:1001px){.stage{overflow:hidden auto}.stagehead h1{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
