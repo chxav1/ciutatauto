@@ -42,5 +42,5 @@ export default async function middleware(req) {
   const ip = ipOf(req);
   if (ip && (await ips(false)).includes(ip)) return next({ headers: { "set-cookie": `${COOKIE}=${tok}; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax` } });
   if (url.pathname.startsWith("/api/")) return Response.json({ error: "Acceso restringido" }, { status: 401 });
-  return html(page(false), 401);
+  return html(page(false));
 }
