@@ -189,7 +189,7 @@ input#q.qs::placeholder{color:#8a8590}
     <div><label>Ubicación <span class="ck"><input type="checkbox" id="locAuto" checked>Auto</span></label><input id="loc" class="f" type="text" disabled></div>
    </div>
    <label>Historia animada</label><div class="chks"><span class="ck"><input type="checkbox" id="anim" checked>Animación del texto</span><span class="ck"><input type="checkbox" id="arrowChk" checked>Flecha</span></div>
-   <label>Ajuste del titular</label><div class="chks"><span class="ck"><input type="checkbox" id="fitBig" checked>Agrandar y centrar si es corto</span></div>
+   <label>Franja</label><div class="chks"><span class="ck"><input type="checkbox" id="fitBig" checked>Franja fija (el titular se ajusta y se centra)</span></div>
    <label for="frame">Recuadro del sticker</label><select id="frame" class="f"><option value="auto">Automático</option><option value="si">Sí</option><option value="no">No</option></select>
    <label>Encuadre <span class="ck"><input type="checkbox" id="fxAuto" checked>Auto</span></label><input id="fx" type="range" min="0" max="1" step="0.01" value="0.5" disabled aria-label="Encuadre">
    <label>Foto</label><div class="btn line file">Cambiar foto<input id="file" type="file" accept="image/*"></div>
@@ -230,15 +230,18 @@ const VAR={andorra:{post:{noLoc:1,bt:952,bb:1235,tx:68,tb:1050,ts:55,tp:75.5,tw:
 
 // La franja oscura NO se mueve ni cambia de tamaño: el titular se adapta (tamaño e interlineado) para caber en 3 líneas
 function fitTitle(c,txt,s){const base=s.ts,bp=s.tp,H=2*bp;
- if($("fitBig").checked){for(let z=Math.round(base*1.15);z>base;z--){c.font=F(z);const l=wrap(c,txt,s.tw);if(l.length<=2){const p=Math.round(bp*z/base*10)/10;return {size:z,pitch:p,lines:l,dy:H/2-(l.length-1)*p/2}}}}
- for(let z=base;z>=Math.round(base*.74);z--){c.font=F(z);const l=wrap(c,txt,s.tw);if(l.length<=3){const p=Math.round(bp*z/base*10)/10;return {size:z,pitch:p,lines:l,dy:$("fitBig").checked?(H-(l.length-1)*p)/2:0}}}
+ {for(let z=Math.round(base*1.15);z>base;z--){c.font=F(z);const l=wrap(c,txt,s.tw);if(l.length<=2){const p=Math.round(bp*z/base*10)/10;return {size:z,pitch:p,lines:l,dy:H/2-(l.length-1)*p/2}}}}
+ for(let z=base;z>=Math.round(base*.74);z--){c.font=F(z);const l=wrap(c,txt,s.tw);if(l.length<=3){const p=Math.round(bp*z/base*10)/10;return {size:z,pitch:p,lines:l,dy:0}}}
  for(let z=Math.round(base*.74);z>=24;z--){c.font=F(z);const l=wrap(c,txt,s.tw);const p=Math.min(bp*z/base*1.02,H/(l.length-1));if(p>=z*1.08)return {size:z,pitch:p,lines:l}}
  c.font=F(24);const l=wrap(c,txt,s.tw);return {size:24,pitch:H/Math.max(1,l.length-1),lines:l}}
 async function render(kind,cv,opt={}){const acc=curAcc(),s=Object.assign({},SPEC[kind],VAR[acc]?.[kind]),c=cv.getContext("2d"),fx=+$("fx").value;
  const sc=Math.max(s.W/photo.width,s.H/photo.height),w=photo.width*sc,h=photo.height*sc;
  const left=Math.min(Math.max(0,fx*w-s.W/2),w-s.W),top=Math.max(0,(h-s.H)/2);
  c.imageSmoothingQuality="high";c.drawImage(photo,-left,-top,w,h);
- const ft=fitTitle(c,$("title").value.trim(),s);s.ts=ft.size;s.tp=ft.pitch;s.tb+=Math.round(ft.dy||0);const lines=ft.lines,ex=0;
+ let lines,ex=0;const txt=$("title").value.trim();
+ if($("fitBig").checked){const ft=fitTitle(c,txt,s),yref=s.tb+(2*s.tp-.53*s.ts)/2;s.ts=ft.size;s.tp=ft.pitch;lines=ft.lines;
+  s.tb=Math.round(yref-((lines.length-1)*s.tp-.53*s.ts)/2)}  // centro visual igual al de la plantilla con 3 líneas
+ else{c.font=F(s.ts);lines=wrap(c,txt,s.tw);ex=(lines.length-3)*s.tp}
  c.fillStyle="rgba(0,0,0,.58)";c.fillRect(0,s.bt-ex,s.W,s.bb-(s.bt-ex));
  if(!s.noLoc)drawPin(c,s.pcx,s.pt-ex,s.pk);
  c.fillStyle="#fff";c.textBaseline="alphabetic";
