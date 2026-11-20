@@ -357,3 +357,15 @@ html[data-theme=dark] .it.done{background:color-mix(in srgb,var(--c,transparent)
 .who-in .hi span{display:inline-block;opacity:0;transform:translateY(.45em);filter:blur(6px);animation:hi-in .6s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--w)*70ms + .15s)}
 @keyframes hi-in{to{opacity:1;transform:none;filter:none}}
 .who-in h2#whoT{font-size:15px;font-weight:500;color:var(--mut);letter-spacing:0;margin:0 0 40px;opacity:0;animation:i-fade .5s ease .7s forwards}
+
+.who-foot{justify-content:center}
+#res.hide~.quick{display:none!important}
+@media(min-width:1001px){
+ .prev{container-type:inline-size;--ph:min(calc(100vh - 336px),calc((100cqw - 28px)/1.3125));flex-wrap:nowrap;align-items:flex-start;max-width:none}
+ body.simple .prev{--ph:min(calc(100vh - 392px),calc((100cqw - 28px)/1.3125))}
+ .prev>div{flex:none;max-width:none}
+ #wpost .cv{width:calc(var(--ph)*.75)}#wstory .cv{width:calc(var(--ph)*.5625)}
+ .prev .cv canvas{display:block;width:100%;height:auto}
+ .prev>div>.btn{width:100%}
+ .prev>div.hide+#wstory .cv,.prev>#wpost.hide~div .cv{width:calc(var(--ph)*.5625)}
+}
