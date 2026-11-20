@@ -96,5 +96,10 @@ document.addEventListener("click",e=>{if(e.target.closest("#themeBtn,[data-theme
  pip.onclick=()=>{if(!$("wpost").classList.contains("hide")){kind=kind=="post"?"story":"post";last=0}};
 })();
 
+// --- modo simple ---
+function setSimple(on){document.body.classList.toggle("simple",on);const b=$("simpleBtn");b.classList.toggle("on",on);b.setAttribute("aria-pressed",on);b.title=tr(on?"Modo completo":"Modo simple");try{localStorage.setItem("cs_simple",on?"1":"")}catch{}}
+$("simpleBtn").onclick=()=>{const on=!document.body.classList.contains("simple");setSimple(on);toast(on?"Modo simple":"Modo completo")};
+try{setSimple(!!localStorage.getItem("cs_simple"))}catch{}
+
 // --- inicio ---
 (async()=>{try{ME=localStorage.getItem(ME_KEY)}catch{}await pull();if(!me()){setTimeout(openWho,ME===null?1700:0)}else{setLang(me().lang);refreshMe()}refreshMark()})();

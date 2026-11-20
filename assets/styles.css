@@ -230,17 +230,17 @@ input#q.qs::placeholder{color:#8a8590}
 .it:hover .mk,.it .mk:focus-visible{opacity:1}.it .mk:hover{border-color:var(--ink);color:var(--ink)}
 @media(hover:none){.it .mk{opacity:1}}
 .it .who{border:0;background:var(--c);color:#fff;font-weight:700;font-size:12px;box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--c)}
-.it.done{box-shadow:inset 3px 0 0 var(--c,transparent)}
+.it.done img{filter:grayscale(1)}
 .it.done .tl{color:var(--mut)}
 [data-tip]{position:relative}
-[data-tip]:hover:after{content:attr(data-tip);position:absolute;right:0;top:calc(100% + 6px);z-index:30;white-space:nowrap;background:var(--ink);color:#fff;font-size:12px;font-weight:500;padding:5px 9px;border-radius:7px;pointer-events:none}
+[data-tip]:hover:after{content:attr(data-tip);position:absolute;right:0;top:calc(100% + 6px);z-index:30;white-space:nowrap;background:var(--ink);color:var(--on-ink);font-size:12px;font-weight:500;padding:5px 9px;border-radius:7px;pointer-events:none}
 /* botón marcar en el escenario */
 .sh-l{display:flex;flex-direction:column;gap:8px;min-width:0}
 .markbtn{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px 0 6px;border:1px solid var(--line);border-radius:16px;background:var(--field);font-size:13px;font-weight:500;cursor:pointer}
 .markbtn:hover{border-color:var(--ink)}
 .markbtn .av{width:22px;height:22px;font-size:11px}
 .markbtn .ring{width:22px;height:22px;border-radius:50%;border:1.5px dashed #c3c5cc}
-.markbtn.on{background:color-mix(in srgb,var(--c) 10%,#fff);border-color:var(--c)}
+.markbtn.on{background:color-mix(in srgb,var(--c) 14%,var(--surface));border-color:var(--c)}
 .it{grid-template-columns:56px minmax(0,1fr) 28px;align-items:center}
 .it .mk,.it .who{align-self:center}
 .it.cur{background:var(--bg)}
@@ -323,3 +323,29 @@ body.enter .app{animation-delay:.08s}
 .sw input:checked+i{background:var(--p)}
 html[data-theme=dark] .sw i{background:#3a3d45}
 @media(max-width:1000px){.insp{padding-bottom:220px}}
+
+.markbtn{color:var(--ink)}.markbtn .ring{border-color:var(--soft)}
+/* modo simple */
+.quick{display:none}
+body.simple .app{grid-template-columns:340px minmax(0,1fr)}
+body.simple .insp,body.simple .lb span,body.simple #pip{display:none!important}
+body.simple .quick{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;max-width:900px;margin:18px auto 0}
+body.simple .quick .btn{flex:1 1 180px;max-width:280px}
+.smp.on{color:var(--p);border-color:color-mix(in srgb,var(--p) 40%,var(--line))}
+.smp svg{width:18px;height:18px}
+@media(max-width:1000px){
+ body.simple .app{display:block}
+ body.simple .stage{padding:14px 12px 24px}
+ body.simple .prev{flex-wrap:nowrap;gap:10px;align-items:flex-end}
+ body.simple .prev>div{flex:1 1 0;min-width:0}
+ body.simple #wpost .cv,body.simple #wstory .cv{border-radius:10px}
+ body.simple .prev .btn{width:100%;padding:0 8px;font-size:13px;margin-top:8px}
+ body.simple .lb{margin-bottom:6px}
+ body.simple .both{margin-top:12px}
+ body.simple .quick{margin-top:12px}
+ body.simple .quick .btn{flex:1 1 0}
+ body.simple .stagehead h1{font-size:17px}
+}
+@media(max-width:640px){.smp{order:2}body.simple .cmd #cpLink{display:none}}
+@media(max-width:1000px){body.simple .prev{align-items:stretch}body.simple .prev>div{display:flex;flex-direction:column}body.simple .prev .cv{margin-top:auto}}
+@media(max-width:640px){.top .smp{margin-left:auto}.top #themeBtn{margin-left:0}}
