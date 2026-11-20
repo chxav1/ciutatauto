@@ -361,11 +361,16 @@ html[data-theme=dark] .it.done{background:color-mix(in srgb,var(--c,transparent)
 .who-foot{justify-content:center}
 #res.hide~.quick{display:none!important}
 @media(min-width:1001px){
- .prev{container-type:inline-size;--ph:min(calc(100vh - 336px),calc((100cqw - 28px)/1.3125));flex-wrap:nowrap;align-items:flex-start;max-width:none}
- body.simple .prev{--ph:min(calc(100vh - 392px),calc((100cqw - 28px)/1.3125))}
+ .prev{container-type:inline-size;--ph:min(calc(100vh - 290px),calc((100cqw - 28px)/1.3125));flex-wrap:nowrap;align-items:flex-start;max-width:none}
+ body.simple .prev{--ph:min(calc(100vh - 346px),calc((100cqw - 28px)/1.3125))}
  .prev>div{flex:none;max-width:none}
  #wpost .cv{width:calc(var(--ph)*.75)}#wstory .cv{width:calc(var(--ph)*.5625)}
  .prev .cv canvas{display:block;width:100%;height:auto}
  .prev>div>.btn{width:100%}
  .prev>div.hide+#wstory .cv,.prev>#wpost.hide~div .cv{width:calc(var(--ph)*.5625)}
 }
+
+.sh-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sh-r #dlBoth{height:38px;border-radius:10px;background:var(--p);border-color:var(--p);color:#fff}
+.sh-r #dlBoth:hover{background:#cc0070;border-color:#cc0070;color:#fff}
+@media(max-width:1000px){.sh-r{justify-content:space-between}.sh-r .seg{order:-1}}
