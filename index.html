@@ -135,6 +135,11 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}#intro{display:none}}
 .chks{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:2px}.chks .ck{font-size:13px}
 .vprog{height:3px;border-radius:3px;background:var(--line,#e7e5ea);margin-top:8px;overflow:hidden;opacity:0;transition:opacity .2s}.vprog.on{opacity:1}.vprog i{display:block;height:100%;width:0;background:var(--p,#E5007E);transition:width .1s}
+.sh-r{display:flex;gap:8px;align-items:center;flex:none}
+.icobtn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border-radius:10px;border:1px solid var(--line,#e7e5ea);background:#fff;color:var(--ink,#17151a);font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:border-color .15s,color .15s,background .15s}
+.icobtn:hover{border-color:var(--p,#E5007E);color:var(--p,#E5007E)}.icobtn:disabled{opacity:.55;cursor:wait}
+@media(max-width:600px){.icobtn span{display:none}.icobtn{width:34px;padding:0;justify-content:center}}
+.it.new .tl:before{content:"Nuevo";display:inline-block;font-size:10px;font-weight:700;color:#fff;background:var(--p,#E5007E);border-radius:4px;padding:1px 5px;margin-right:6px;vertical-align:1px}
 </style></head><body>
 <div id="intro"><div class="mark"><svg viewBox="0 0 59 56"><path class="c0" d="M58.4202 28C58.4202 43.4661 45.7922 56 30.2101 56C14.6279 56 2 43.4661 2 28C2 12.5339 14.6279 0 30.2101 0C45.7922 0 58.4202 12.5339 58.4202 28Z" fill="#E5007E"/><g class="c1"><path d="M7.09753 27.885C7.09753 17.9384 14.6859 11.2115 23.6644 11.2115C33.2802 11.2115 37.5667 17.3634 38.6094 21.963L31.89 24.0903C31.3686 21.9055 29.3412 18.1684 23.7224 18.1684C19.4358 18.1684 14.57 21.2156 14.57 27.9425C14.57 33.922 19.0303 37.3717 23.7803 37.3717C29.3412 37.3717 31.5424 33.692 32.1796 31.3922L39.0149 33.347C37.9722 37.7166 33.7436 44.501 23.7803 44.501C14.5121 44.386 7.09753 37.8316 7.09753 27.885Z" fill="white"/></g><g class="c2"><path d="M45.4446 44.386C44.1123 44.386 43.0117 43.9836 42.2008 43.1211C41.3319 42.2587 40.9264 41.2813 40.9264 40.1314C40.9264 38.924 41.3319 37.9466 42.2008 37.1417C43.0697 36.3368 44.1123 35.9343 45.4446 35.9343C46.7769 35.9343 47.8775 36.3368 48.7464 37.1417C49.5574 37.9466 50.0208 38.924 50.0208 40.1314C50.0208 41.3388 49.6153 42.3162 48.7464 43.1211C47.8775 43.9836 46.7769 44.386 45.4446 44.386ZM42.4904 32.6571L41.0422 11.2115H49.847L48.3989 32.6571H42.4904Z" fill="white"/></g></svg><div class="word">Ciutat <span>Studio</span></div></div></div>
 
@@ -155,7 +160,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div class="msgbar"><p id="msg"></p></div>
   <div id="empty" class="empty"><svg viewBox="0 0 59 56" aria-hidden="true"><path d="M58.4202 28C58.4202 43.4661 45.7922 56 30.2101 56C14.6279 56 2 43.4661 2 28C2 12.5339 14.6279 0 30.2101 0C45.7922 0 58.4202 12.5339 58.4202 28Z" fill="#E5007E"/><path d="M45.4446 44.386C44.1123 44.386 43.0117 43.9836 42.2008 43.1211C41.3319 42.2587 40.9264 41.2813 40.9264 40.1314C40.9264 38.924 41.3319 37.9466 42.2008 37.1417C43.0697 36.3368 44.1123 35.9343 45.4446 35.9343C46.7769 35.9343 47.8775 36.3368 48.7464 37.1417C49.5574 37.9466 50.0208 38.924 50.0208 40.1314C50.0208 41.3388 49.6153 42.3162 48.7464 43.1211C47.8775 43.9836 46.7769 44.386 45.4446 44.386ZM42.4904 32.6571L41.0422 11.2115H49.847L48.3989 32.6571H42.4904Z" fill="white"/><path d="M7.09753 27.885C7.09753 17.9384 14.6859 11.2115 23.6644 11.2115C33.2802 11.2115 37.5667 17.3634 38.6094 21.963L31.89 24.0903C31.3686 21.9055 29.3412 18.1684 23.7224 18.1684C19.4358 18.1684 14.57 21.2156 14.57 27.9425C14.57 33.922 19.0303 37.3717 23.7803 37.3717C29.3412 37.3717 31.5424 33.692 32.1796 31.3922L39.0149 33.347C37.9722 37.7166 33.7436 44.501 23.7803 44.501C14.5121 44.386 7.09753 37.8316 7.09753 27.885Z" fill="white"/></svg><h2>Elige un artículo</h2><p>Selecciona una noticia de la lista o pega su enlace arriba. El post, la historia y el copy se generan al momento.</p></div>
   <div id="res" class="hide">
-   <div class="stagehead"><h1 id="htitle"></h1><div class="seg"><button class="on" data-v="both">Post e historia</button><button data-v="story">Solo historia</button></div></div>
+   <div class="stagehead"><h1 id="htitle"></h1><div class="sh-r"><button class="icobtn" id="dlBoth" title="Descargar post e historia" aria-label="Descargar post e historia"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><path d="m7.5 9.5 4.5 4.5 4.5-4.5"/><path d="M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/></svg><span>Descargar las 2</span></button><div class="seg"><button class="on" data-v="both">Post e historia</button><button data-v="story">Solo historia</button></div></div></div>
    <div class="prev">
     <div id="wpost"><div class="lb"><b>Post</b><span>1080 × 1440</span></div><div class="cv"><canvas id="cpost" width="1080" height="1440"></canvas></div><button class="btn" onclick="dl('cpost','POST')">Descargar post</button></div>
     <div id="wstory"><div class="lb"><b>Historia</b><span>1080 × 1920</span></div><div class="cv"><canvas id="cstory" width="1080" height="1920"></canvas></div><button class="btn" onclick="dl('cstory','HISTORIA')"><span id="dlsLabel">Descargar historia</span></button><div class="vprog" id="vprog"><i></i></div></div>
@@ -287,7 +292,7 @@ const FEED="https://laciutat.cat/uploads/feeds/feed_laciutat_ca.xml";let ITEMS=[
 const done=new Set((()=>{try{return JSON.parse(localStorage.getItem("ac_done")||"[]")}catch{return[]}})());
 const saveDone=()=>{try{localStorage.setItem("ac_done",JSON.stringify([...done].slice(-500)))}catch{}};
 async function loadFeed(){try{let items;
-  try{const r=await fetch("/api/feed");if((r.headers.get("content-type")||"").includes("json")&&r.ok)items=(await r.json()).items}catch{}
+  try{const r=await fetch("/api/feed?t="+Date.now(),{cache:"no-store"});if((r.headers.get("content-type")||"").includes("json")&&r.ok)items=(await r.json()).items}catch{}
   if(!items){const d=new DOMParser().parseFromString(await viaProxy(FEED+"?t="+Date.now()),"text/xml");
    items=[...d.querySelectorAll("item")].map(i=>({title:i.querySelector("title")?.textContent.trim(),link:i.querySelector("link")?.textContent.trim(),date:i.querySelector("pubDate")?.textContent,sub:(i.querySelector("description")?.textContent||"").trim(),cats:[...i.querySelectorAll("category")].map(c=>c.textContent.trim()),img:i.querySelector("enclosure")?.getAttribute("url")||""}))}
   ITEMS=items.filter(x=>x.link);const eds=[...new Set(ITEMS.map(x=>x.cats[0]).filter(Boolean))].sort();
@@ -320,7 +325,7 @@ async function imageSrc(u){if(!u)return"";try{const r=await fetch("/api/image?ur
 $("ed").onchange=renderFeed;$("frame").onchange=draw;
 const setFold=f=>{$("feedBody").classList.toggle("hide",f);$("arrow").textContent=f?"▸":"▾";try{localStorage.setItem("ac_fold",f?"1":"")}catch{}};
 $("fold").onclick=()=>setFold(!$("feedBody").classList.contains("hide"));try{setFold(!!localStorage.getItem("ac_fold"))}catch{}
-$("reload").onclick=loadFeed;loadFeed();setInterval(loadFeed,60000);
+$("reload").onclick=loadFeed;loadFeed();setInterval(()=>loadFeed(),15000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadFeed()});
 
 
 // ---- Ciutat Studio · capa de interfaz ----
@@ -341,7 +346,8 @@ function drawTitle(c,kind,dx,a){const T=TT[kind];if(!T)return;const {lines,s,ex}
  lines.forEach((l,i)=>{const m=c.measureText(l);c.fillText(l,s.tx+m.actualBoundingBoxLeft+dx,s.tb-ex+i*s.tp)});c.restore()}
 const ARW=new Image();ARW.src="arrow.png";
 const SB=document.createElement("canvas");SB.width=1080;SB.height=1920;
-const animOn=()=>$("anim").checked,arrowOn=()=>$("arrowChk").checked,isVid=()=>animOn()||arrowOn();
+const animOn=()=>$("anim").checked,arrowOn=()=>$("arrowChk").checked&&!frameOn(),isVid=()=>animOn()||arrowOn();
+function frameOn(){const f=$("frame").value;return f=="si"||(f=="auto"&&FRAME.includes(curAcc()))}
 // fotograma n (30 fps): titular entra desde la izquierda (80 px, ease-out) en 0,5 s; flecha en bucle de 36 fotogramas
 function frameAt(c,n){c.drawImage(SB,0,0);
  let dx=0,a=1;if(animOn()){const p=Math.min(1,n/15),e=1-(1-p)*(1-p);dx=-80*(1-e);a=n==0?0:e}
@@ -349,30 +355,49 @@ function frameAt(c,n){c.drawImage(SB,0,0);
  if(arrowOn()&&ARW.complete){const A=VID.arrow,k=n%A.n;c.drawImage(ARW,k*A.w,0,A.w,A.h,A.x,A.y,A.w,A.h)}}
 let loopT0=0,loopOn=false;
 function loop(ts){if(!loopOn)return;const c=$("cstory").getContext("2d");if(isVid()&&TT.story){const n=Math.floor((ts-loopT0)/1000*VID.fps)%VID.frames;frameAt(c,n)}requestAnimationFrame(loop)}
-async function buildStoryBase(){if(!photo||!TT.story)return;await render("story",SB,{noTitle:true});loopT0=performance.now();
+async function buildStoryBase(){if(!photo||!TT.story)return;await render("story",SB,{noTitle:true});loopT0=performance.now();prepVideo();
  if(isVid()){if(!loopOn){loopOn=true;requestAnimationFrame(loop)}}else loopOn=false}
 let baseQ=0;const _render=render;render=async(k,cv,o)=>{const r=await _render(k,cv,o);if(k=="story"&&cv.id=="cstory"){clearTimeout(baseQ);baseQ=setTimeout(buildStoryBase,30)}return r};
 ["anim","arrowChk"].forEach(id=>$(id).addEventListener("change",()=>{loopOn=false;draw();$("dlsLabel").textContent=isVid()?"Descargar historia (vídeo)":"Descargar historia"}));
 $("dlsLabel").textContent="Descargar historia (vídeo)";
 function save(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
-async function exportMP4(){const W=1080,H=1920,cv=document.createElement("canvas");cv.width=W;cv.height=H;const c=cv.getContext("2d"),pr=$("vprog");pr.classList.add("on");
- const step=f=>pr.firstElementChild.style.width=(f*100).toFixed(1)+"%";
+let MUX=null;const getMux=()=>MUX||(MUX=import("https://cdn.jsdelivr.net/npm/mp4-muxer@5/+esm"));setTimeout(()=>getMux().catch(()=>MUX=null),2500);
+let VCFG=null;async function encCfg(W,H){if(VCFG)return VCFG;
+ for(const hw of ["prefer-hardware","no-preference"])for(const codec of ["avc1.640028","avc1.4d0028","avc1.42003e"]){const k={codec,width:W,height:H,bitrate:8e6,framerate:VID.fps,latencyMode:"realtime",hardwareAcceleration:hw,avc:{format:"avc"}};
+  try{if((await VideoEncoder.isConfigSupported(k)).supported)return VCFG=k}catch{}}return null}
+let VTOK=0,VJOB=null;
+// exporta el vídeo; si cambia algo a mitad (tok), se cancela
+async function exportMP4(tok=VTOK,show=true){const W=1080,H=1920,cv=document.createElement("canvas");cv.width=W;cv.height=H;const c=cv.getContext("2d",{willReadFrequently:false}),pr=$("vprog");
+ const step=f=>{if(show){pr.classList.add("on");pr.firstElementChild.style.width=(f*100).toFixed(1)+"%"}};const live=()=>{if(tok!==VTOK)throw new Error("cancel")};
  try{
-  if(window.VideoEncoder){const {Muxer,ArrayBufferTarget}=await import("https://cdn.jsdelivr.net/npm/mp4-muxer@5/+esm");
-   let cfg=null;for(const codec of ["avc1.640028","avc1.4d0028","avc1.42003e"]){const k={codec,width:W,height:H,bitrate:10e6,framerate:VID.fps};try{if((await VideoEncoder.isConfigSupported(k)).supported){cfg=k;break}}catch{}}
+  if(window.VideoEncoder){const [{Muxer,ArrayBufferTarget},cfg]=await Promise.all([getMux(),encCfg(W,H)]);
    if(cfg){const mux=new Muxer({target:new ArrayBufferTarget(),video:{codec:"avc",width:W,height:H,frameRate:VID.fps},fastStart:"in-memory"});
     let err=null;const enc=new VideoEncoder({output:(ch,m)=>mux.addVideoChunk(ch,m),error:e=>err=e});enc.configure(cfg);
-    for(let n=0;n<VID.frames;n++){frameAt(c,n);const vf=new VideoFrame(cv,{timestamp:Math.round(n*1e6/VID.fps),duration:Math.round(1e6/VID.fps)});enc.encode(vf,{keyFrame:n%30==0});vf.close();
-     if(enc.encodeQueueSize>8)await new Promise(r=>setTimeout(r,0));if(n%6==0){step(n/VID.frames);await new Promise(r=>setTimeout(r,0))}if(err)throw err}
-    await enc.flush();mux.finalize();step(1);return new Blob([mux.target.buffer],{type:"video/mp4"})}}
-  // alternativa: grabación en tiempo real
+    try{for(let n=0;n<VID.frames;n++){live();frameAt(c,n);const vf=new VideoFrame(cv,{timestamp:Math.round(n*1e6/VID.fps),duration:Math.round(1e6/VID.fps)});enc.encode(vf,{keyFrame:n%90==0});vf.close();
+      if(enc.encodeQueueSize>24)await new Promise(r=>enc.addEventListener("dequeue",r,{once:true}));if(n%12==0)step(n/VID.frames);if(err)throw err}
+     await enc.flush();}finally{if(enc.state!="closed")enc.close()}
+    mux.finalize();step(1);return new Blob([mux.target.buffer],{type:"video/mp4"})}}
   const types=["video/mp4;codecs=avc1","video/mp4","video/webm;codecs=vp9","video/webm"],type=types.find(x=>window.MediaRecorder&&MediaRecorder.isTypeSupported(x));
   if(!type)throw new Error("Este navegador no puede crear vídeo");
-  const st=cv.captureStream(VID.fps),rec=new MediaRecorder(st,{mimeType:type,videoBitsPerSecond:10e6}),parts=[];rec.ondataavailable=e=>parts.push(e.data);
+  const st=cv.captureStream(VID.fps),rec=new MediaRecorder(st,{mimeType:type,videoBitsPerSecond:8e6}),parts=[];rec.ondataavailable=e=>parts.push(e.data);
   const done=new Promise(r=>rec.onstop=r);frameAt(c,0);rec.start();const t0=performance.now();
-  await new Promise(r=>{const tick=()=>{const n=Math.floor((performance.now()-t0)/1000*VID.fps);if(n>=VID.frames){r();return}frameAt(c,n);step(n/VID.frames);requestAnimationFrame(tick)};tick()});
-  rec.stop();await done;return new Blob(parts,{type:type.split(";")[0]})
- }finally{setTimeout(()=>{pr.classList.remove("on");step(0)},600)}}
-const _dl2=dl;dl=async(id,n)=>{if(id!="cstory"||!isVid())return _dl2(id,n);
- if(!TT.story)return;toast("Creando vídeo…");try{const b=await exportMP4();save(b,`laciutat_HISTORIA_${Date.now()}.${b.type.includes("mp4")?"mp4":"webm"}`);toast("Vídeo descargado")}catch(e){toast(e.message||"No se pudo crear el vídeo")}};
+  await new Promise((r,j)=>{const tick=()=>{if(tok!==VTOK){j(new Error("cancel"));return}const n=Math.floor((performance.now()-t0)/1000*VID.fps);if(n>=VID.frames){r();return}frameAt(c,n);step(n/VID.frames);requestAnimationFrame(tick)};tick()}).finally(()=>rec.state!="inactive"&&rec.stop());
+  await done;return new Blob(parts,{type:type.split(";")[0]})
+ }finally{if(show)setTimeout(()=>{pr.classList.remove("on");pr.firstElementChild.style.width="0"},500)}}
+// el vídeo se prepara solo en segundo plano en cuanto la historia está lista
+function prepVideo(){VTOK++;VJOB=null;if(!isVid()||!TT.story)return;const tok=VTOK;
+ setTimeout(()=>{if(tok!==VTOK)return;const job={tok,p:exportMP4(tok,false)};job.p.catch(()=>{});VJOB=job},350)}
+async function getVideo(){if(VJOB&&VJOB.tok===VTOK){try{return await VJOB.p}catch(e){if(e.message!="cancel")throw e}}const tok=VTOK;return exportMP4(tok,true)}
+const vname=b=>`laciutat_HISTORIA_${Date.now()}.${b.type.includes("mp4")?"mp4":"webm"}`;
+const _dl2=dl;dl=async(id,n)=>{if(id!="cstory"||!isVid())return _dl2(id,n);if(!TT.story)return;
+ const ready=VJOB&&VJOB.tok===VTOK;if(!ready)toast("Creando vídeo…");try{const b=await getVideo();save(b,vname(b));toast("Vídeo descargado")}catch(e){toast(e.message=="cancel"?"Vuelve a pulsar descargar":(e.message||"No se pudo crear el vídeo"))}};
+// descargar las 2 a la vez (archivos separados)
+$("dlBoth").onclick=async()=>{if(!TT.story)return;const btn=$("dlBoth");btn.disabled=true;
+ try{const story=$("mode").value=="story";
+  if(!story)$("cpost").toBlob(b=>save(b,`laciutat_POST_${Date.now()}.jpg`),"image/jpeg",.95);
+  if(isVid()){const b=await getVideo();save(b,vname(b))}else $("cstory").toBlob(b=>save(b,`laciutat_HISTORIA_${Date.now()}.jpg`),"image/jpeg",.95);
+  toast(story?"Historia descargada":"Post e historia descargados")}catch(e){toast(e.message||"No se pudo descargar")}finally{btn.disabled=false}};
+// artículos nuevos: aviso y etiqueta
+const NEW=new Set();const _lf=loadFeed;loadFeed=async()=>{const prev=new Set(ITEMS.map(x=>x.link));await _lf();if(prev.size){const f=ITEMS.filter(x=>!prev.has(x.link));f.forEach(x=>NEW.add(x.link));if(f.length){toast(f.length==1?"1 artículo nuevo":f.length+" artículos nuevos");renderFeed()}}};
+const _rf3=renderFeed;renderFeed=()=>{_rf3();document.querySelectorAll("#feed .it").forEach(el=>el.classList.toggle("new",NEW.has(el.dataset.l)&&!done.has(el.dataset.l)))};
 </script></body></html>
