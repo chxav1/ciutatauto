@@ -146,12 +146,14 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .btn.loading,.icobtn.loading{pointer-events:none;opacity:.9}
 .btn.loading:before,.icobtn.loading:before{content:"";width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;margin-right:8px;animation:vspin .7s linear infinite;flex:none}
 @keyframes vspin{to{transform:rotate(360deg)}}
+.icobtn.sq{width:36px;height:36px;padding:0;justify-content:center;flex:none}
+.icobtn.ok{border-color:#1f9d55;color:#1f9d55}
 </style></head><body>
 <div id="intro"><div class="mark"><svg viewBox="0 0 59 56"><path class="c0" d="M58.4202 28C58.4202 43.4661 45.7922 56 30.2101 56C14.6279 56 2 43.4661 2 28C2 12.5339 14.6279 0 30.2101 0C45.7922 0 58.4202 12.5339 58.4202 28Z" fill="#E5007E"/><g class="c1"><path d="M7.09753 27.885C7.09753 17.9384 14.6859 11.2115 23.6644 11.2115C33.2802 11.2115 37.5667 17.3634 38.6094 21.963L31.89 24.0903C31.3686 21.9055 29.3412 18.1684 23.7224 18.1684C19.4358 18.1684 14.57 21.2156 14.57 27.9425C14.57 33.922 19.0303 37.3717 23.7803 37.3717C29.3412 37.3717 31.5424 33.692 32.1796 31.3922L39.0149 33.347C37.9722 37.7166 33.7436 44.501 23.7803 44.501C14.5121 44.386 7.09753 37.8316 7.09753 27.885Z" fill="white"/></g><g class="c2"><path d="M45.4446 44.386C44.1123 44.386 43.0117 43.9836 42.2008 43.1211C41.3319 42.2587 40.9264 41.2813 40.9264 40.1314C40.9264 38.924 41.3319 37.9466 42.2008 37.1417C43.0697 36.3368 44.1123 35.9343 45.4446 35.9343C46.7769 35.9343 47.8775 36.3368 48.7464 37.1417C49.5574 37.9466 50.0208 38.924 50.0208 40.1314C50.0208 41.3388 49.6153 42.3162 48.7464 43.1211C47.8775 43.9836 46.7769 44.386 45.4446 44.386ZM42.4904 32.6571L41.0422 11.2115H49.847L48.3989 32.6571H42.4904Z" fill="white"/></g></svg><div class="word">Ciutat <span>Studio</span></div></div></div>
 
 <header class="top">
  <div class="brand"><svg viewBox="0 0 59 56" aria-hidden="true"><path d="M58.4202 28C58.4202 43.4661 45.7922 56 30.2101 56C14.6279 56 2 43.4661 2 28C2 12.5339 14.6279 0 30.2101 0C45.7922 0 58.4202 12.5339 58.4202 28Z" fill="#E5007E"/><path d="M45.4446 44.386C44.1123 44.386 43.0117 43.9836 42.2008 43.1211C41.3319 42.2587 40.9264 41.2813 40.9264 40.1314C40.9264 38.924 41.3319 37.9466 42.2008 37.1417C43.0697 36.3368 44.1123 35.9343 45.4446 35.9343C46.7769 35.9343 47.8775 36.3368 48.7464 37.1417C49.5574 37.9466 50.0208 38.924 50.0208 40.1314C50.0208 41.3388 49.6153 42.3162 48.7464 43.1211C47.8775 43.9836 46.7769 44.386 45.4446 44.386ZM42.4904 32.6571L41.0422 11.2115H49.847L48.3989 32.6571H42.4904Z" fill="white"/><path d="M7.09753 27.885C7.09753 17.9384 14.6859 11.2115 23.6644 11.2115C33.2802 11.2115 37.5667 17.3634 38.6094 21.963L31.89 24.0903C31.3686 21.9055 29.3412 18.1684 23.7224 18.1684C19.4358 18.1684 14.57 21.2156 14.57 27.9425C14.57 33.922 19.0303 37.3717 23.7803 37.3717C29.3412 37.3717 31.5424 33.692 32.1796 31.3922L39.0149 33.347C37.9722 37.7166 33.7436 44.501 23.7803 44.501C14.5121 44.386 7.09753 37.8316 7.09753 27.885Z" fill="white"/></svg>Ciutat <span>Studio</span></div>
- <div class="cmd"><input id="url" type="url" placeholder="Pega el enlace de un artículo de laciutat.cat" aria-label="Enlace del artículo"><button id="go" class="btn pri">Generar</button></div>
+ <div class="cmd"><input id="url" type="url" placeholder="Pega el enlace de un artículo de laciutat.cat" aria-label="Enlace del artículo"><button id="go" class="btn pri">Generar</button><button id="cpLink" class="icobtn sq" title="Copiar enlace del artículo" aria-label="Copiar enlace del artículo"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg></button></div>
  <button class="tbtn" id="fold" aria-label="Mostrar u ocultar artículos"><span id="arrow">▾</span> Artículos</button>
 </header>
 
@@ -311,17 +313,20 @@ function ago(d){const m=Math.round((Date.now()-new Date(d))/6e4);return m<1?"aho
 function renderFeed(){const ed=$("ed").value,L=ITEMS.filter(x=>!ed||x.cats[0]==ed);
  $("feed").innerHTML=L.map((x,i)=>`<div class="it${done.has(x.link)?" done":""}${cur==x.link?" cur":""}" data-l="${esc(x.link)}">
   <button class="tick${done.has(x.link)?" on":""}" title="${done.has(x.link)?"Desmarcar":"Marcar como hecha"}">✓</button><img loading="lazy" src="${imgURL(x.img)}" alt="">
-  <div class="tx"><div class="tl">${esc(x.title)}</div><div class="mt">${ago(x.date)} · ${esc(x.cats.slice(-1)[0]||"")}</div></div>
+  <div class="tx"><div class="tl">${esc(x.title)}</div><div class="mt">${ago(x.date)} · ${esc(accLabel(x))}</div></div>
   <button class="btn sel">Seleccionar</button></div>`).join("")||'<p class="mut">Sin artículos</p>'}
 $("feed").addEventListener("click",async e=>{const it=e.target.closest(".it");if(!it)return;const l=it.dataset.l;
  if(e.target.closest(".tick")){done.has(l)?done.delete(l):done.add(l);saveDone();renderFeed();return}
  if(e.target.closest(".sel"))await pick(ITEMS.find(x=>x.link==l))});
 const SUBACC={"Reus":"reus","Cambrils":"cambrils","Salou":"salou","Vila-seca":"vilaseca","La Seu d'Urgell":"pirineus","Pirineus":"pirineus","Tremp":"pirineus","Vilanova i la Geltrú":"garraf","Sitges":"garraf","Sant Pere de Ribes":"garraf","Garraf":"garraf"};
 const NOTPLACE=/^(La Ciutat|Opinió|Política|Cultura|Entrevistes|Catalunya|Espanya|Món|Baix |Alt |Tarragonès|Regió|Parroquies|Nacional|Costa Brava|Penedès|Catalunya Central)/;
+function autoOf(x){const path=new URL(x.link).pathname;let g=guess(path,x.title,x.sub);
+ const top=x.cats[0]||"";if(/^(Catalunya|Espanya|Món)$/.test(top))g={acc:"general",loc:top};
+ else{const sub=x.cats.find((c,i)=>i>0&&!NOTPLACE.test(c));if(sub&&/^La Ciutat/.test(top)){g.loc=sub;if(SUBACC[sub])g.acc=SUBACC[sub]}}return g}
+// nombre corto de la cuenta para la lista (p. ej. L'Hospitalet -> Barcelona)
+function accLabel(x){try{const g=autoOf(x);if(g.acc=="general")return x.cats[0]&&/^(Catalunya|Espanya|Món)$/.test(x.cats[0])?x.cats[0]:"General";return (ACC.find(a=>a[0]==g.acc)||[])[1]||g.loc}catch{return x.cats.slice(-1)[0]||""}}
 async function pick(x){cur=x.link;renderFeed();$("url").value=x.link;$("msg").textContent="";
- const path=new URL(x.link).pathname;auto=guess(path,x.title,x.sub);
- const top=x.cats[0]||"";if(/^(Catalunya|Espanya|Món)$/.test(top))auto={acc:"general",loc:top};
- else{const sub=x.cats.find((c,i)=>i>0&&!NOTPLACE.test(c));if(sub&&!/^La Ciutat/.test(top)===false){auto.loc=sub;if(SUBACC[sub])auto.acc=SUBACC[sub]}}
+ const path=new URL(x.link).pathname;auto=autoOf(x);
  data={title:x.title,sub:x.sub,url:x.link,path};$("title").value=x.title;$("link").value=x.link;
  try{const src=await imageSrc(x.img);if(src)await setPhoto(src);else throw 0}catch{try{const d=await getArticle(x.link);if(d.image)await setPhoto(d.image);else{photo=null;$("msg").textContent="No he podido coger la foto: añádela con «Añadir imagen»."}}catch(e){$("msg").textContent=e.message}}
  sync();if(photo)await draw();done.add(x.link);saveDone();renderFeed();
@@ -416,4 +421,7 @@ $("dlBoth").onclick=async()=>{if(!TT.story)return;const btn=$("dlBoth");
 // artículos nuevos: aviso y etiqueta
 const NEW=new Set();const _lf=loadFeed;loadFeed=async()=>{const prev=new Set(ITEMS.map(x=>x.link));await _lf();if(prev.size){const f=ITEMS.filter(x=>!prev.has(x.link));f.forEach(x=>NEW.add(x.link));if(f.length){toast(f.length==1?"1 artículo nuevo":f.length+" artículos nuevos");renderFeed()}}};
 const _rf3=renderFeed;renderFeed=()=>{_rf3();document.querySelectorAll("#feed .it").forEach(el=>el.classList.toggle("new",NEW.has(el.dataset.l)&&!done.has(el.dataset.l)))};
+
+$("cpLink").onclick=()=>{const v=($("link").value||$("url").value||"").trim();if(!v){toast("Elige un artículo primero");return}
+ navigator.clipboard.writeText(v).then(()=>{const b=$("cpLink");b.classList.add("ok");setTimeout(()=>b.classList.remove("ok"),1200);toast("Enlace copiado")},()=>toast("No se pudo copiar"))};
 </script></body></html>
