@@ -148,6 +148,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 @keyframes vspin{to{transform:rotate(360deg)}}
 .icobtn.sq{width:36px;height:36px;padding:0;justify-content:center;flex:none}
 .icobtn.ok{border-color:#1f9d55;color:#1f9d55}
+.qs{height:34px;padding:0 12px 0 32px;font-size:13px;margin:0 0 10px;width:100%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%2377707e' stroke-width='2'%3E%3Ccircle cx='6' cy='6' r='4.5'/%3E%3Cpath d='m9.5 9.5 3 3'/%3E%3C/svg%3E") no-repeat 11px center}
 </style></head><body>
 <div id="intro"><div class="mark"><svg viewBox="0 0 59 56"><path class="c0" d="M58.4202 28C58.4202 43.4661 45.7922 56 30.2101 56C14.6279 56 2 43.4661 2 28C2 12.5339 14.6279 0 30.2101 0C45.7922 0 58.4202 12.5339 58.4202 28Z" fill="#E5007E"/><g class="c1"><path d="M7.09753 27.885C7.09753 17.9384 14.6859 11.2115 23.6644 11.2115C33.2802 11.2115 37.5667 17.3634 38.6094 21.963L31.89 24.0903C31.3686 21.9055 29.3412 18.1684 23.7224 18.1684C19.4358 18.1684 14.57 21.2156 14.57 27.9425C14.57 33.922 19.0303 37.3717 23.7803 37.3717C29.3412 37.3717 31.5424 33.692 32.1796 31.3922L39.0149 33.347C37.9722 37.7166 33.7436 44.501 23.7803 44.501C14.5121 44.386 7.09753 37.8316 7.09753 27.885Z" fill="white"/></g><g class="c2"><path d="M45.4446 44.386C44.1123 44.386 43.0117 43.9836 42.2008 43.1211C41.3319 42.2587 40.9264 41.2813 40.9264 40.1314C40.9264 38.924 41.3319 37.9466 42.2008 37.1417C43.0697 36.3368 44.1123 35.9343 45.4446 35.9343C46.7769 35.9343 47.8775 36.3368 48.7464 37.1417C49.5574 37.9466 50.0208 38.924 50.0208 40.1314C50.0208 41.3388 49.6153 42.3162 48.7464 43.1211C47.8775 43.9836 46.7769 44.386 45.4446 44.386ZM42.4904 32.6571L41.0422 11.2115H49.847L48.3989 32.6571H42.4904Z" fill="white"/></g></svg><div class="word">Ciutat <span>Studio</span></div></div></div>
 
@@ -161,7 +162,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
  <aside class="feedcol" id="feedBody">
   <div class="fhead"><div class="t"><h3>Últimos artículos</h3><span id="upd"></span></div>
    <div class="r"><select id="ed" class="f"><option value="">Todas las ediciones</option></select><button class="btn line" id="reload" title="Recargar" aria-label="Recargar">↻</button></div></div>
-  <div id="feed"><p class="mut">Cargando…</p></div>
+  <input id="q" class="f qs" type="search" placeholder="Buscar artículos" aria-label="Buscar artículos"><div id="feed"><p class="mut">Cargando…</p></div>
  </aside>
 
  <main class="stage">
@@ -441,4 +442,12 @@ let probing=false;async function probe(){if(probing||document.hidden||!ITEMS.len
   const {items}=await r.json();let fresh=0;items.forEach(x=>{if(!LIVE.has(x.id)){LIVE.set(x.id,x);fresh++}});if(fresh)mergeLive(true)}catch{}finally{probing=false}}
 const _lf2=loadFeed;loadFeed=async()=>{await _lf2();mergeLive(false)};
 setInterval(probe,10000);setTimeout(probe,4000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)probe()});
+
+// ---- búsqueda y sonido de aviso ----
+const norm=s=>(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const _rf4=renderFeed;renderFeed=()=>{_rf4();const q=norm($("q").value.trim());if(!q)return;document.querySelectorAll("#feed .it").forEach(el=>{const x=ITEMS.find(i=>i.link==el.dataset.l);el.style.display=x&&norm(x.title+" "+x.cats.join(" ")+" "+accLabel(x)).includes(q)?"":"none"})};
+$("q").addEventListener("input",renderFeed);
+let AC=null;const unlock=()=>{try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume()}catch{}};["pointerdown","keydown"].forEach(e=>addEventListener(e,unlock,{once:true}));
+function chime(){try{unlock();const t=AC.currentTime;[[880,0],[1318.5,.12]].forEach(([f,d])=>{const o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.18,t+d+.015);g.gain.exponentialRampToValueAtTime(.0001,t+d+.9);o.connect(g).connect(AC.destination);o.start(t+d);o.stop(t+d+1)})}catch{}}
+const _toast=toast;toast=m=>{_toast(m);if(/artículos? nuevos?/.test(m))chime()};
 </script></body></html>
