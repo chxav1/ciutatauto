@@ -376,3 +376,52 @@ html[data-theme=dark] .it.done{background:color-mix(in srgb,var(--c,transparent)
 @media(max-width:1000px){.sh-r{justify-content:space-between}.sh-r .seg{order:-1}}
 
 @media(min-width:1001px){.stage{overflow:hidden auto}.stagehead h1{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+/* pestañas */
+.tabs{display:flex;gap:2px;padding:3px;border-radius:11px;background:var(--bg);border:1px solid var(--line);flex:none}
+.tabs button{height:30px;padding:0 13px;border:0;border-radius:8px;background:none;color:var(--mut);font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s,color .15s}
+.tabs button:hover{color:var(--ink)}
+.tabs button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+body.logmode .app,body.logmode .cmd,body.logmode #simpleBtn,body.logmode #pip{display:none!important}
+body.logmode .tabs{margin-right:auto}
+@media(max-width:640px){.tabs{order:3}.cmd{order:4}body.logmode .tabs{flex-basis:100%}.tabs button{flex:1}}
+/* registro */
+.logv{padding:24px 28px 40px;max-width:1400px;margin:0 auto;animation:app-in .4s cubic-bezier(.2,.8,.2,1) both}
+.lg-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 16px;margin-bottom:16px}
+.lg-nav{display:flex;align-items:center;gap:6px}
+.lg-nav .thm{font-size:20px;line-height:1}
+.lg-pick{position:relative;cursor:pointer;margin-left:8px}
+.lg-pick h2{margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.lg-pick input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.lg-pick input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+.lg-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.lg-tools .f{width:auto;min-width:150px}
+.lg-tools input.f{min-width:170px}
+.lg-sum{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px}
+.lg-tot{display:flex;align-items:baseline;gap:6px;margin-right:8px}.lg-tot b{font-size:26px;font-weight:600;letter-spacing:-.02em}.lg-tot span{color:var(--mut)}
+.lg-chip{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 10px 0 4px;border:1px solid var(--line);border-radius:16px;background:var(--surface);font-size:13px;font-weight:500}
+.lg-chip .av{width:24px;height:24px;font-size:11px}.lg-chip b{font-weight:700;margin-left:2px}
+.lg-wrap{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:auto;max-height:calc(100vh - 230px)}
+.lg{width:100%;min-width:1000px;border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:13.5px}
+.lg th{position:sticky;top:0;z-index:2;background:var(--surface);text-align:left;font-size:12px;font-weight:600;color:var(--mut);padding:10px 10px;border-bottom:1px solid var(--line)}
+.lg td{padding:0;border-bottom:1px solid var(--line);border-right:1px solid var(--line);height:40px;vertical-align:middle}
+.lg td:last-child{border-right:0}
+.lg tr.dh td{height:auto;padding:14px 12px 6px;background:var(--bg);border-right:0;font-weight:600;font-size:13px}
+.lg tr.dh em{font-style:normal;color:var(--mut);font-weight:500;margin-left:8px}
+.lg input,.lg select{width:100%;height:40px;border:0;background:transparent;color:var(--ink);font:inherit;padding:0 10px;outline:none;border-radius:0;box-shadow:inset 0 0 0 2px transparent;transition:box-shadow .12s,background .3s}
+.lg select{appearance:none;-webkit-appearance:none;cursor:pointer}
+.lg input:focus,.lg select:focus{box-shadow:inset 0 0 0 2px var(--p);background:var(--field)}
+.lg input.saving{background:color-mix(in srgb,var(--p) 6%,transparent)}
+.lg input.saved,.lg select.saved{background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.lg tr[data-id]:hover td{background:color-mix(in srgb,var(--ink) 2.5%,transparent)}
+.lg tr.gone{opacity:.3;transition:opacity .2s}
+.lg-who{display:flex;align-items:center;padding-left:10px}.lg-who .av{width:24px;height:24px;font-size:11px;flex:none}.lg-who select{padding-left:8px}
+.lg-ti{position:relative}.lg-ti input{padding-right:34px}
+.lg-ti a{position:absolute;right:6px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:26px;height:26px;border-radius:7px;color:var(--mut)}
+.lg-ti a:hover{color:var(--p);background:var(--bg)}
+.lg-del{width:100%;height:40px;border:0;background:none;color:var(--soft);font:inherit;font-size:18px;cursor:pointer}
+.lg-del:hover{color:#dc2626}.lg-del.sure{color:#dc2626;font-size:12px;font-weight:600}
+.lg-empty{padding:40px 12px!important;text-align:center;color:var(--mut);height:auto!important}
+@media(max-width:640px){.logv{padding:16px 12px 32px}.lg-bar{flex-direction:column;align-items:stretch}.lg-tools .f,.lg-tools input.f{flex:1 1 140px;min-width:0}.lg-tools .btn{flex:1}.lg-pick h2{font-size:17px}.lg-wrap{max-height:none}}
+.lg-nav .thm{order:0;margin-left:0}
+@media(max-width:640px){body.logmode .top #themeBtn{margin-left:auto}
+ .lg{min-width:800px}}

@@ -120,9 +120,9 @@ try{setSimple(!!localStorage.getItem("cs_simple"))}catch{}
 
 // --- scroll suave en la lista de noticias ---
 (()=>{const el=$("feedBody");let tgt=null,raf=0;
- function step(){const d=tgt-el.scrollTop;if(Math.abs(d)<.6){el.scrollTop=tgt;tgt=null;raf=0;return}el.scrollTop+=d*.085;raf=requestAnimationFrame(step)}
+ function step(){const d=tgt-el.scrollTop;if(Math.abs(d)<.6){el.scrollTop=tgt;tgt=null;raf=0;return}el.scrollTop+=d*.06;raf=requestAnimationFrame(step)}
  el.addEventListener("wheel",e=>{if(e.ctrlKey||matchMedia("(prefers-reduced-motion:reduce)").matches)return;const max=el.scrollHeight-el.clientHeight;if(max<=0)return;
-  let dy=e.deltaMode==1?e.deltaY*32:e.deltaMode==2?e.deltaY*el.clientHeight:e.deltaY;dy*=.8;if(tgt==null)tgt=el.scrollTop;
+  let dy=e.deltaMode==1?e.deltaY*32:e.deltaMode==2?e.deltaY*el.clientHeight:e.deltaY;dy*=.55;if(tgt==null)tgt=el.scrollTop;
   const n=Math.max(0,Math.min(max,tgt+dy));if(n==tgt&&(n==0||n==max))return;e.preventDefault();tgt=n;if(!raf)raf=requestAnimationFrame(step)},{passive:false});
  el.addEventListener("scroll",()=>{if(!raf)tgt=null},{passive:true})})();
 
