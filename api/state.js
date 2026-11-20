@@ -11,7 +11,7 @@ async function read(fresh) {
   const r = await get(PATH, { access: "private", useCache: false, ...(cache.etag ? { ifNoneMatch: cache.etag } : {}) });
   if (!r) cache = { etag: null, data: EMPTY, at: Date.now() };
   else if (r.statusCode === 304) cache.at = Date.now();
-  else cache = { etag: r.blob.etag, data: JSON.parse(await new Response(r.stream).text()), at: Date.now() };
+  else cache = { etag: String(r.blob.etag).replace(/^W\//, ""), data: JSON.parse(await new Response(r.stream).text()), at: Date.now() };
   return cache;
 }
 
@@ -71,9 +71,9 @@ export async function POST(request) {
       const last = next._last; delete next._last;
       const r = await put(PATH, JSON.stringify(next), {
         access: "private", contentType: "application/json", addRandomSuffix: false, cacheControlMaxAge: 60,
-        ...(c.etag ? { ifMatch: c.etag } : { allowOverwrite: true })
+        ...(c.etag && i < 4 ? { ifMatch: c.etag } : { allowOverwrite: true })
       });
-      cache = { etag: r.etag, data: next, at: Date.now() };
+      cache = { etag: String(r.etag).replace(/^W\//, ""), data: next, at: Date.now() };
       if (op.type === "mark") {
         // el registro se actualiza en el servidor a la vez que la marca
         try {

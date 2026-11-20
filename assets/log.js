@@ -26,8 +26,12 @@ function bounds(){const a=new Date(anchor);a.setHours(0,0,0,0);let s=new Date(a)
  else{s.setDate(1);e=new Date(s);e.setMonth(e.getMonth()+1)}
  return[+s,+e]}
 function months(){const[s,e]=bounds(),out=new Set();for(let t=s;t<e;t+=864e5)out.add(mkey(t));return[...out]}
-async function load(){const ms=months();try{const r=await fetch("/api/log?m="+ms.join(",")+"&t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;const j=await r.json();for(const m in j)DATA[m]=j[m].rows||[];backfill();if(!busy())draw()}catch{$("lgBody").innerHTML=`<tr><td colspan="8" class="lg-empty">${tr("No se pudo cargar el registro. Reintentando…")}</td></tr>`}}
-const done=new Set();
+async function load(){const ms=months();try{const r=await fetch("/api/log?m="+ms.join(",")+"&t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;const j=await r.json();for(const m in j)DATA[m]=j[m].rows||[];backfill();prune();if(!busy())draw()}catch{$("lgBody").innerHTML=`<tr><td colspan="8" class="lg-empty">${tr("No se pudo cargar el registro. Reintentando…")}</td></tr>`}}
+const done=new Set(),pruned=new Set();
+// filas automáticas cuya noticia ya no está marcada: se quitan solas
+function prune(){if(!STV)return;const lim=Date.now()-864e5*28;
+ for(const r of Object.values(DATA).flat()){if(!r.aid||MARKS[r.aid]||r.at<lim||pruned.has(r.aid))continue;pruned.add(r.aid);
+  for(const m in DATA)DATA[m]=DATA[m].filter(x=>x.aid!=r.aid);post({type:"removeAid",aid:r.aid}).catch(()=>pruned.delete(r.aid))}}
 function backfill(){const[s,e]=bounds();const have=new Set(Object.values(DATA).flat().map(r=>r.aid));
  for(const id in MARKS){const m=MARKS[id];if(!m.at||m.at<s||m.at>=e||have.has(+id)||done.has(id))continue;const it=ITEMS.find(x=>idOf(x.link)==id);if(!it)continue;done.add(id);
   post({type:"add",keep:true,row:{...infoOf(it.link),by:m.by,at:m.at}}).then(()=>setTimeout(load,300)).catch(()=>{})}}
@@ -76,7 +80,7 @@ $("lgBody").addEventListener("change",async e=>{const el=e.target,tr_=el.closest
 $("lgBody").addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.matches("input")){e.preventDefault();e.target.blur()}});
 $("lgBody").addEventListener("click",async e=>{const b=e.target.closest(".lg-del");if(!b)return;
  if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent=tr("¿Borrar?");setTimeout(()=>{b.classList.remove("sure");b.textContent="×"},2500);return}
- const tr_=b.closest("tr");tr_.classList.add("gone");try{await post({type:"delete",m:tr_.dataset.m,id:tr_.dataset.id});toast("Fila borrada");load()}catch(err){tr_.classList.remove("gone");toast(err.message)}});
+ const tr_=b.closest("tr");tr_.classList.add("gone");const row=(DATA[tr_.dataset.m]||[]).find(x=>x.id==tr_.dataset.id);try{if(row&&row.aid&&MARKS[row.aid]&&row.link){await setMark(row.link,false);return}await post({type:"delete",m:tr_.dataset.m,id:tr_.dataset.id});toast("Fila borrada");load()}catch(err){tr_.classList.remove("gone");toast(err.message)}});
 $("lgAdd").onclick=async()=>{if(!ME)return;const[s,e]=bounds();let at=Date.now();if(at<s||at>=e)at=s+12*36e5;
  try{await post({type:"add",row:{by:ME,at,title:"",acc:"",kind:"Post + historia"}});await load();const f=$("lgBody").querySelector('tr[data-id] [data-k=title]');if(f)f.focus()}catch(err){toast(err.message)}};
 // --- exportación a Excel (.xlsx con estilo) ---

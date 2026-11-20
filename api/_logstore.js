@@ -14,7 +14,7 @@ export async function read(m, fresh) {
   let n;
   if (!r) n = { etag: null, rows: [], at: Date.now() };
   else if (r.statusCode === 304) n = { ...c, at: Date.now() };
-  else n = { etag: r.blob.etag, rows: JSON.parse(await new Response(r.stream).text()), at: Date.now() };
+  else n = { etag: String(r.blob.etag).replace(/^W\//, ""), rows: JSON.parse(await new Response(r.stream).text()), at: Date.now() };
   cache.set(m, n);
   return n;
 }
@@ -22,14 +22,15 @@ export async function read(m, fresh) {
 export async function write(m, fn) {
   for (let i = 0; i < 6; i++) {
     const c = await read(m, true);
+    if (i) cache.delete(m);
     const rows = fn(structuredClone(c.rows));
     if (rows === null) return c;
     try {
       const r = await put(pathOf(m), JSON.stringify(rows), {
         access: "private", contentType: "application/json", addRandomSuffix: false, cacheControlMaxAge: 60,
-        ...(c.etag ? { ifMatch: c.etag } : { allowOverwrite: true })
+        ...(c.etag && i < 4 ? { ifMatch: c.etag } : { allowOverwrite: true })
       });
-      const n = { etag: r.etag, rows, at: Date.now() };
+      const n = { etag: String(r.etag).replace(/^W\//, ""), rows, at: Date.now() };
       cache.set(m, n);
       return n;
     } catch (e) {
