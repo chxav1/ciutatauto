@@ -13,13 +13,12 @@ async function post(op){const r=await fetch("/api/log",{method:"POST",headers:{"
 function infoOf(link){const it=ITEMS.find(x=>x.link==link);const isCur=$("link").value==link;let acc="";
  try{acc=isCur?curAcc():(it?autoOf(it).acc:"")}catch{}
  return{aid:idOf(link),link,title:isCur?($("title").value||it?.title||""):(it?.title||""),acc:accName(acc),kind:isCur&&$("mode").value=="story"?"Historia":"Post + historia"}}
-const _sm=window.setMark;
-window.setMark=async(link,on)=>{const before=!!markOf(link);await _sm(link,on);const now=!!markOf(link);if(now==before)return;
- try{if(on)await post({type:"add",row:{...infoOf(link),by:ME}});else await post({type:"removeAid",aid:idOf(link)})}catch(e){toast(e.message)}
- if(open)load()};
+window.logMeta=l=>{try{return infoOf(l)}catch{return{}}};
+{const _sm=window.setMark;window.setMark=async(l,on)=>{await _sm(l,on);if(open)load()};}
+{const _ap=apply;apply=j=>{_ap(j);if(open&&j&&!j.same)setTimeout(load,150)};}
 
 // --- vista ---
-let open=false,range="week",anchor=Date.now(),DATA={},timer=0,editing=0;
+let open=false,range="week",anchor=Date.now(),DATA={},timer=0;const busy=()=>{const a=document.activeElement;return!!a&&$("lgBody").contains(a)&&a.matches("input[type=text]")};
 const view=$("logv");
 function bounds(){const a=new Date(anchor);a.setHours(0,0,0,0);let s=new Date(a),e;
  if(range=="day")e=new Date(+s+864e5);
@@ -27,7 +26,7 @@ function bounds(){const a=new Date(anchor);a.setHours(0,0,0,0);let s=new Date(a)
  else{s.setDate(1);e=new Date(s);e.setMonth(e.getMonth()+1)}
  return[+s,+e]}
 function months(){const[s,e]=bounds(),out=new Set();for(let t=s;t<e;t+=864e5)out.add(mkey(t));return[...out]}
-async function load(){const ms=months();try{const r=await fetch("/api/log?m="+ms.join(",")+"&t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;const j=await r.json();for(const m in j)DATA[m]=j[m].rows||[];backfill();if(!editing)draw()}catch{$("lgBody").innerHTML=`<tr><td colspan="8" class="lg-empty">${tr("No se pudo cargar el registro. Reintentando…")}</td></tr>`}}
+async function load(){const ms=months();try{const r=await fetch("/api/log?m="+ms.join(",")+"&t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;const j=await r.json();for(const m in j)DATA[m]=j[m].rows||[];backfill();if(!busy())draw()}catch{$("lgBody").innerHTML=`<tr><td colspan="8" class="lg-empty">${tr("No se pudo cargar el registro. Reintentando…")}</td></tr>`}}
 const done=new Set();
 function backfill(){const[s,e]=bounds();const have=new Set(Object.values(DATA).flat().map(r=>r.aid));
  for(const id in MARKS){const m=MARKS[id];if(!m.at||m.at<s||m.at>=e||have.has(+id)||done.has(id))continue;const it=ITEMS.find(x=>idOf(x.link)==id);if(!it)continue;done.add(id);
@@ -68,14 +67,12 @@ ${has("note")?`<td><input type="text" data-k="note" value="${esc(r.note||"")}" p
  $("lgBody").innerHTML=html}
 
 // edición tipo Excel: se guarda al cambiar cada celda
-$("lgBody").addEventListener("focusin",()=>editing++);
-$("lgBody").addEventListener("focusout",()=>setTimeout(()=>{editing=Math.max(0,editing-1)},0));
 $("lgBody").addEventListener("change",async e=>{const el=e.target,tr_=el.closest("tr[data-id]");if(!tr_)return;const k=el.dataset.k,id=tr_.dataset.id,m=tr_.dataset.m;let patch;
  if(k=="d"||k=="t"){const d=tr_.querySelector('[data-k=d]').value,t=tr_.querySelector('[data-k=t]').value||"00:00";if(!d)return;patch={at:new Date(`${d}T${t}`).getTime()}}
  else patch={[k]:el.value};
  el.classList.add("saving");try{await post({type:"update",m,id,patch});el.classList.remove("saving");el.classList.add("saved");setTimeout(()=>el.classList.remove("saved"),900);
   if(k=="by"){const p=profOf(el.value);tr_.querySelector(".av").style.setProperty("--c",p?p.color:"#9a9da5");tr_.querySelector(".av").textContent=ini(p&&p.name)}
-  if(k=="d"||k=="t"||k=="by"){editing=0;load()}}catch(err){el.classList.remove("saving");toast(err.message)}});
+  if(k=="d"||k=="t"||k=="by")load()}catch(err){el.classList.remove("saving");toast(err.message)}});
 $("lgBody").addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.matches("input")){e.preventDefault();e.target.blur()}});
 $("lgBody").addEventListener("click",async e=>{const b=e.target.closest(".lg-del");if(!b)return;
  if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent=tr("¿Borrar?");setTimeout(()=>{b.classList.remove("sure");b.textContent="×"},2500);return}

@@ -1,5 +1,6 @@
 // Estado compartido del equipo: perfiles y noticias hechas. Se guarda en Vercel Blob (privado).
 import { get, put, BlobPreconditionFailedError } from "@vercel/blob";
+import { addRow, removeAid } from "./_logstore.js";
 
 const PATH = "state.json";
 const EMPTY = { profiles: [], marks: {} };
@@ -73,6 +74,14 @@ export async function POST(request) {
         ...(c.etag ? { ifMatch: c.etag } : { allowOverwrite: true })
       });
       cache = { etag: r.etag, data: next, at: Date.now() };
+      if (op.type === "mark") {
+        // el registro se actualiza en el servidor a la vez que la marca
+        try {
+          const had = !!c.data.marks[String(Number(op.id))], has = !!next.marks[String(Number(op.id))];
+          if (has && !had) await addRow({ ...(op.meta || {}), aid: Number(op.id), by: op.by, at: next.marks[String(Number(op.id))].at });
+          else if (!has && had) await removeAid(op.id);
+        } catch (e) { console.error("registro", e.message); }
+      }
       return out(cache, last ? { id: last } : {});
     } catch (e) {
       if (e instanceof BlobPreconditionFailedError) { cache.at = 0; continue; }

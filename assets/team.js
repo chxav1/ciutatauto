@@ -15,7 +15,7 @@ setInterval(pull,4000);document.addEventListener("visibilitychange",()=>{if(!doc
 // --- noticias hechas ---
 window.setMark=async(link,on)=>{const id=idOf(link);if(!id||!ME)return;const prev=MARKS[id];
  if(on)MARKS[id]={by:ME,at:Date.now()};else delete MARKS[id];renderFeed();refreshMark();
- try{await api({type:"mark",id,on,by:ME});toast(on?"Marcada como hecha":"Desmarcada")}catch(e){if(prev)MARKS[id]=prev;else delete MARKS[id];renderFeed();refreshMark();toast(e.message)}};
+ try{await api({type:"mark",id,on,by:ME,meta:on&&window.logMeta?window.logMeta(link):undefined});toast(on?"Marcada como hecha":"Desmarcada")}catch(e){if(prev)MARKS[id]=prev;else delete MARKS[id];renderFeed();refreshMark();toast(e.message)}};
 const _rfT=renderFeed;renderFeed=()=>{_rfT();document.querySelectorAll("#feed .it").forEach(el=>{const m=markOf(el.dataset.l),p=m&&profOf(m.by);if(p)el.style.setProperty("--c",p.color);else el.style.removeProperty("--c")})};
 function refreshMark(){const b=$("markBtn");if(!b)return;const l=$("link").value;if(!l){b.classList.add("hide");return}b.classList.remove("hide");
  const m=markOf(l),p=m&&profOf(m.by);b.classList.toggle("on",!!m);if(p)b.style.setProperty("--c",p.color);
@@ -132,12 +132,10 @@ let sndT=0;function snd(k){const n=SND[k];if(!n||Date.now()-sndT<60)return;sndT=
  n.forEach(([f,d,len])=>{[1,2].forEach((h,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type=i?"triangle":"sine";o.frequency.value=f*h;const v=i?.18:1;
   g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(v,t+d+.008);g.gain.exponentialRampToValueAtTime(.0001,t+d+len);o.connect(g).connect(out);o.start(t+d);o.stop(t+d+len+.05)})})}catch{}}
 window.snd=snd;
-{const _pk=pick;pick=async(...a)=>{snd("tap");return _pk(...a)};}
 {const _cw=closeWho;closeWho=pick=>{if(pick)snd("enter");return _cw(pick)};}
 {const _sm=window.setMark;window.setMark=async(l,on)=>{const b=!!markOf(l);await _sm(l,on);if(!!markOf(l)!=b)snd(on?"done":"undo")};}
 {const _sv=save;save=(...a)=>{snd("save");return _sv(...a)};}
 {const _sf=shareFiles;shareFiles=async f=>{const r=await _sf(f);if(r)snd("save");return r};}
-{const _cp=cp;cp=(...a)=>{snd("copy");return _cp(...a)};}
 
 // --- inicio ---
 (async()=>{try{ME=localStorage.getItem(ME_KEY)}catch{}await pull();if(me()){setLang(me().lang);refreshMe()}setTimeout(openWho,1700);refreshMark()})();
