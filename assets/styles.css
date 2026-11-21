@@ -484,3 +484,10 @@ body.logmode #autoBtn{display:none!important}
 kbd{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;background:var(--bg);font:600 11.5px/1 var(--f);color:var(--ink)}
 @media(max-width:1000px),(hover:none){.kbd-btn,.kbd-pop{display:none!important}}
 body.logmode .kbd-btn{display:none}
+
+#reload.rl{width:40px;height:40px;padding:0;justify-content:center;flex:none;background:var(--field);color:var(--mut);border-color:var(--line)}
+#reload.rl:hover{color:var(--ink);border-color:var(--soft)}
+#reload.rl svg{transition:transform .5s cubic-bezier(.3,.9,.3,1)}
+#reload.rl:active svg{transform:rotate(-30deg)}
+#reload.rl.spin svg{animation:spin .8s linear infinite}
+@media(pointer:coarse){.kbd-btn,.kbd-pop{display:none!important}}
