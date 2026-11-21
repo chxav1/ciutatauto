@@ -30,8 +30,8 @@ function fitTitle(c,txt,s){const base=s.ts,bp=s.tp,H=2*bp;
  for(let z=Math.round(base*.74);z>=24;z--){c.font=F(z);const l=wrap(c,txt,s.tw);const p=Math.min(bp*z/base*1.02,H/(l.length-1));if(p>=z*1.08)return {size:z,pitch:p,lines:l}}
  c.font=F(24);const l=wrap(c,txt,s.tw);return {size:24,pitch:H/Math.max(1,l.length-1),lines:l}}
 async function render(kind,cv,opt={}){const acc=curAcc(),s=Object.assign({},SPEC[kind],VAR[acc]?.[kind]),c=cv.getContext("2d"),fx=+$("fx").value;
- const sc=Math.max(s.W/photo.width,s.H/photo.height),w=photo.width*sc,h=photo.height*sc;
- const left=Math.min(Math.max(0,fx*w-s.W/2),w-s.W),top=Math.max(0,(h-s.H)/2);
+ const sc=Math.max(s.W/photo.width,s.H/photo.height)*(window.ZOOM||1),w=photo.width*sc,h=photo.height*sc,fy=window.FY??.5;
+ const left=Math.min(Math.max(0,fx*w-s.W/2),w-s.W),top=Math.min(Math.max(0,fy*h-s.H/2),h-s.H);
  c.imageSmoothingQuality="high";c.drawImage(photo,-left,-top,w,h);
  let lines,ex=0;const txt=$("title").value.trim();
  if($("fitBig").checked){const ft=fitTitle(c,txt,s),yref=s.tb+(2*s.tp-.53*s.ts)/2;s.ts=ft.size;s.tp=ft.pitch;lines=ft.lines;
