@@ -557,3 +557,31 @@ body.notesmode #logv{display:none!important}
  .nt-new.shut .nt-open{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:50px;border:0;background:none;color:var(--ink);font:inherit;font-size:15px;font-weight:600;cursor:pointer}
  .nt-open span{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--p);color:#fff;font-size:17px;line-height:1}
 }
+
+/* notas: legibilidad y colores */
+.nt{grid-template-columns:24px minmax(0,1fr) auto;padding:14px 14px 12px 14px;--nc:transparent}
+.nt-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-bottom:7px}
+.nt-ty,.nt-due{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:12px;font-size:12.5px;font-weight:600;background:var(--bg);color:var(--ink)}
+.t-tarea .nt-ty{background:color-mix(in srgb,#2563eb 11%,var(--surface));color:#2563eb}
+.t-aviso .nt-ty{background:color-mix(in srgb,#ea580c 13%,var(--surface));color:#c2410c}
+.t-idea .nt-ty{background:color-mix(in srgb,#7c3aed 12%,var(--surface));color:#7c3aed}
+html[data-theme=dark] .t-tarea .nt-ty{color:#7aa7ff}html[data-theme=dark] .t-aviso .nt-ty{color:#fb923c}html[data-theme=dark] .t-idea .nt-ty{color:#b794ff}
+.nt.late .nt-due{background:#dc2626;color:#fff}
+.nt-to{display:inline-flex;align-items:center;gap:6px;margin-left:auto;font-size:12.5px;color:var(--mut)}
+.nt-to b{color:var(--ink);font-weight:600}
+.nt-tx{font-size:16px;line-height:1.42;font-weight:500;letter-spacing:-.005em}
+.nt-meta{margin-top:10px;gap:6px 14px;font-size:12px}
+.nt-who{color:var(--soft);gap:6px}
+.nt-acts{flex-direction:column}
+/* color de nota */
+.nt.c-rosa{--nc:#ec4899}.nt.c-naranja{--nc:#f97316}.nt.c-amarillo{--nc:#eab308}.nt.c-verde{--nc:#22c55e}.nt.c-azul{--nc:#3b82f6}.nt.c-morado{--nc:#8b5cf6}.nt.c-gris{--nc:#78716c}
+.nt[class*=" c-"]{background:color-mix(in srgb,var(--nc) 11%,var(--surface));border-color:color-mix(in srgb,var(--nc) 38%,var(--line))}
+html[data-theme=dark] .nt[class*=" c-"]{background:color-mix(in srgb,var(--nc) 16%,var(--surface))}
+.nt[class*=" c-"] .nt-art{background:color-mix(in srgb,var(--nc) 10%,var(--surface))}
+.ncol{display:flex;gap:7px;flex-wrap:wrap}
+.ncs{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);cursor:pointer;background:var(--c,var(--field));transition:transform .12s,box-shadow .12s}
+.ncs:hover{transform:scale(1.08)}
+.ncs.on{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ink)}
+.ncs.c-none{background:linear-gradient(135deg,var(--field) 45%,#dc2626 46% 54%,var(--field) 55%)}
+.ncs.c-rosa{--c:#f9a8d4}.ncs.c-naranja{--c:#fdba74}.ncs.c-amarillo{--c:#fde047}.ncs.c-verde{--c:#86efac}.ncs.c-azul{--c:#93c5fd}.ncs.c-morado{--c:#c4b5fd}.ncs.c-gris{--c:#d6d3d1}
+@media(max-width:560px){.nt-to{margin-left:0;flex-basis:100%}}

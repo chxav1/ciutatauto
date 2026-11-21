@@ -27,6 +27,7 @@ async function write(fn) {
 }
 
 const TYPES = ["tarea", "aviso", "idea"];
+const COLORS = ["", "rosa", "naranja", "amarillo", "verde", "azul", "morado", "gris"];
 const str = (v, n) => String(v ?? "").trim().slice(0, n);
 function clean(n) {
   const o = {};
@@ -35,6 +36,7 @@ function clean(n) {
   if ("to" in n) o.to = str(n.to, 40);               // "" = todo el equipo
   if ("due" in n) o.due = +n.due > 1e12 ? +n.due : 0; // fecha/hora límite (opcional)
   if ("pin" in n) o.pin = !!n.pin;
+  if ("color" in n) o.color = COLORS.includes(n.color) ? n.color : "";
   if ("link" in n) o.link = /^https?:\/\//.test(n.link || "") ? str(n.link, 500) : "";
   if ("ltitle" in n) o.ltitle = str(n.ltitle, 200);
   return o;
