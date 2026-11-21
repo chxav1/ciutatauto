@@ -8,16 +8,19 @@ btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 $("simpleBtn").before(btn);
 
 let on=false,q=[],busy=false;
-const save=()=>{try{localStorage.setItem(KEY,on?"1":"")}catch{}};
+let owner=null;const save=()=>{};
+try{localStorage.removeItem(KEY);localStorage.removeItem(BTN)}catch{}
 function setOn(v,quiet){on=v;btn.classList.toggle("on",on);btn.setAttribute("aria-pressed",on);btn.title=tr(on?"Modo auto activado: las noticias nuevas se hacen solas":"Modo auto");save();
  if(!quiet)toast(on?"Modo auto activado":"Modo auto desactivado");if(!on)q=[]}
-function showBtn(v){btn.classList.toggle("hide",!v);try{localStorage.setItem(BTN,v?"1":"")}catch{}if(!v&&on)setOn(false,true)}
+function showBtn(v){btn.classList.toggle("hide",!v);owner=v?ME:null;if(!v&&on)setOn(false,true)}
+// solo para este perfil y esta sesión: al cambiar de perfil (o recargar) desaparece
+setInterval(()=>{if(owner&&ME!==owner)showBtn(false)},700);document.addEventListener("click",e=>{if(owner&&e.target.closest("#meBtn"))showBtn(false)},true);
 btn.onclick=()=>setOn(!on);
 
 // código secreto
 let buf="";
 addEventListener("keydown",e=>{const a=document.activeElement;if(a&&a.matches("input,textarea,select,[contenteditable]"))return;if(e.key.length!=1)return;
- buf=(buf+e.key.toLowerCase()).slice(-CODE.length);if(buf==CODE){buf="";const vis=btn.classList.contains("hide");showBtn(vis);toast(vis?"Modo auto desbloqueado":"Modo auto oculto")}});
+ buf=(buf+e.key.toLowerCase()).slice(-CODE.length);if(buf==CODE){buf="";if(!ME||!$("who").classList.contains("hide"))return;const vis=btn.classList.contains("hide");showBtn(vis);toast(vis?"Modo auto desbloqueado":"Modo auto oculto")}});
 
 // copiar el copy (si la pestaña no está delante, se copia al volver a ella)
 let pend=null;
@@ -32,7 +35,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 async function idle(){for(let i=0;i<120;i++){if(!document.querySelector(".loading")&&!$("go").classList.contains("busy"))return;await wait(500)}}
 async function run(){if(busy)return;busy=true;
  try{while(on&&q.length){const l=q.shift();await wait(1200);
-  const it=ITEMS.find(x=>x.link==l);if(!it||markOf(l)||!ME)continue;
+  const it=ITEMS.find(x=>x.link==l);if(!it||markOf(l)||!ME||ME!==owner)continue;
   try{if($("mode").value!="both")document.querySelector('.seg [data-v="both"]')?.click();
    await pick(it);await wait(600);if(!photo){toast("Modo auto: sin foto, revisa “"+it.title.slice(0,40)+"…”");continue}
    try{await window.fxReady;await wait(300)}catch{}
@@ -43,5 +46,4 @@ async function run(){if(busy)return;busy=true;
   catch(e){toast("Modo auto: "+(e.message||"error"))}}}
  finally{busy=false}}
 
-try{if(localStorage.getItem(BTN)){btn.classList.remove("hide");if(localStorage.getItem(KEY))setOn(true,true)}}catch{}
 })();
