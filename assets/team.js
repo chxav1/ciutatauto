@@ -36,7 +36,7 @@ document.querySelector('#wpost .btn').addEventListener("click",()=>dlKind("Post"
 function refreshMe(){const p=me();$("meAv").textContent=ini(p&&p.name);$("meAv").style.setProperty("--c",p?p.color:"#9a9da5");$("meName").textContent=p?p.name:"";
  if(p&&p.lang!==LANG)setLang(p.lang)}
 function renderWho(){const g=$("whoGrid");$("who").classList.toggle("editing",editing);
- g.innerHTML=PROFILES.map((p,i)=>`<button class="pf" data-id="${p.id}" style="--c:${p.color};--i:${i}"><span class="tile"><i class="dot"></i><b class="L">${esc(ini(p.name))}</b></span>${esc(p.name)}${p.emoji?` <span class="pemo">${esc(p.emoji)}</span>`:""}</button>`).join("")+
+ g.innerHTML=PROFILES.map((p,i)=>`<button class="pf" data-id="${p.id}" style="--c:${p.color};--i:${i}"><span class="tile"><i class="dot"></i><b class="L">${esc(ini(p.name))}</b></span>${esc(p.name)}${p.emoji?` <span class="pemo">${emoHTML(p.emoji)}</span>`:""}</button>`).join("")+
   `<button class="pf add" id="pfAdd" style="--i:${PROFILES.length}"><span class="tile">+</span>${tr("Añadir perfil")}</button>`;
  $("whoEdit").textContent=tr(editing?"Listo":"Gestionar perfiles");$("whoEdit").classList.toggle("hide",!PROFILES.length)}
 const HI={es:{m:["Buenos días","Bon dia por aquí","Buenos días, equipo","Arrancamos la mañana","Café en mano y a por ello","Buenos días, que hay noticias","Mañana nueva, posts nuevos","Hoy toca contar Tarragona"],t:["Buenas tardes","Buenas tardes, equipo","Seguimos con la tarde","La tarde también tiene noticias","Un último empujón","Vamos a por la tarde"],n:["Buenas noches","Turno de noche, qué cracks","Todavía por aquí","Última ronda de noticias","La noche también informa"],a:["Qué alegría verte","Hola de nuevo","Listos para publicar","Que no se escape ninguna noticia","Hoy va a quedar todo muy bonito","A por un buen día de redes","Las historias no se suben solas","Hagamos que se lea todo"]},
@@ -56,9 +56,10 @@ function closeWho(pick){const w=$("who");clearTimeout(whoT);w.classList.remove("
 $("whoGrid").onclick=e=>{const b=e.target.closest(".pf");if(!b)return;if(b.id=="pfAdd")return openEditor(null);const p=PROFILES.find(x=>x.id==b.dataset.id);if(!p)return;
  if(editing)return openEditor(p);ME=p.id;try{localStorage.setItem(ME_KEY,ME)}catch{}refreshMe();closeWho(b);renderFeed();refreshMark()};
 $("whoEdit").onclick=()=>{editing=!editing;renderWho()};$("meBtn").onclick=openWho;
-const EMOS=["✨","🔥","⚡","🌊","🌿","🌸","🍀","☀️","🌙","⭐","🎧","🎨","📸","🎬","📰","✏️","☕","🍕","🚀","🎯","🦊","🐙","🐼","🦋"];let peEmo="";
-function renderEmo(){$("peEmo").innerHTML=`<button type="button" class="emc none${!peEmo?" on":""}" data-e="" title="${tr("Sin emoji")}" aria-label="${tr("Sin emoji")}">—</button>`+EMOS.map(e=>`<button type="button" class="emc${e==peEmo?" on":""}" data-e="${e}">${e}</button>`).join("")}
-$("peEmo").onclick=e=>{const b=e.target.closest(".emc");if(!b)return;peEmo=b.dataset.e;renderEmo();peAv()};
+const EMOS=["img:cd","img:cd-rojo","img:diamante","img:paloma","img:ala","img:oso","img:cruz","✨","🔥","⚡","🌊","🌸","🎧","📸","☕","🚀","🦊"];let peEmo="";
+const emoHTML=e=>e&&e.startsWith("img:")?`<img class="emi" src="assets/emoji/${e.slice(4)}.png" alt="" draggable="false">`:esc(e||"");
+function renderEmo(){$("peEmo").innerHTML=`<button type="button" class="emc none${!peEmo?" on":""}" data-e="" title="${tr("Sin emoji")}" aria-label="${tr("Sin emoji")}">—</button>`+EMOS.map(e=>{const own=PROFILES.find(x=>x.id!=peId&&x.emoji==e);return`<button type="button" class="emc${e==peEmo?" on":""}" data-e="${e}" ${own?`disabled title="${esc(own.name)}"`:""}>${emoHTML(e)}${own?`<span class="own">${esc(ini(own.name))}</span>`:""}</button>`}).join("")}
+$("peEmo").onclick=e=>{const b=e.target.closest(".emc");if(!b||b.disabled)return;peEmo=b.dataset.e;renderEmo();peAv()};
 function openEditor(p){peId=p?p.id:null;peEmo=p&&p.emoji||"";renderEmo();peLang=p?p.lang:LANG;peColor=p?p.color:null;$("peName").value=p?p.name:"";$("peT").textContent=tr(p?"Editar perfil":"Nuevo perfil");
  $("peDel").classList.toggle("hide",!p);$("peErr").textContent="";
  [...$("peLang").children].forEach(b=>b.classList.toggle("on",b.dataset.v==peLang));
@@ -73,7 +74,7 @@ $("peName").oninput=peAv;$("peCancel").onclick=()=>$("pedit").classList.add("hid
 $("peForm").onsubmit=async e=>{e.preventDefault();const btn=$("peSave");btn.disabled=true;$("peErr").textContent="";
  try{const j=await api({type:"profile",profile:{id:peId,name:$("peName").value,color:peColor,lang:peLang,emoji:peEmo}});$("pedit").classList.add("hide");
   if(!peId||peId==ME){ME=j.id;try{localStorage.setItem(ME_KEY,ME)}catch{}setLang(peLang);refreshMe()}
-  if(!peId){closeWho()}else renderWho();toast("Perfil guardado")}catch(err){$("peErr").textContent=err.message;renderColors()}finally{btn.disabled=false}};
+  if(!peId){closeWho()}else renderWho();toast("Perfil guardado")}catch(err){$("peErr").textContent=err.message;renderColors();renderEmo()}finally{btn.disabled=false}};
 $("peDel").onclick=async()=>{if(!peId)return;const p=PROFILES.find(x=>x.id==peId);if(!await askConfirm((LANG=="ca"?"Eliminar el perfil de ":"¿Eliminar el perfil de ")+(p?p.name:"")+"?",tr("Sus noticias hechas seguirán marcadas, pero ya no se podrá entrar con este perfil.")))return;
  try{await api({type:"deleteProfile",id:peId});if(peId==ME){ME=null;try{localStorage.removeItem(ME_KEY)}catch{}}$("pedit").classList.add("hide");renderWho();toast("Perfil eliminado")}catch(err){$("peErr").textContent=err.message}};
 addEventListener("keydown",e=>{if(e.key=="Escape"&&!$("pedit").classList.contains("hide"))$("pedit").classList.add("hide")});

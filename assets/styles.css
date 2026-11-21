@@ -449,3 +449,9 @@ body.logmode .tabs{margin-right:auto}
 .cfm-acts{display:flex;gap:10px}.cfm-acts .btn{flex:1}
 .btn.danger{background:#dc2626;color:#fff}.btn.danger:hover{background:#b91c1c}
 .mcard{background:var(--surface)}
+
+.emi{width:1.25em;height:1.25em;object-fit:contain;vertical-align:-.28em;pointer-events:none}
+.emc .emi{width:24px;height:24px;vertical-align:middle}
+.emc{position:relative}.emc:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.emc .own{position:absolute;right:-4px;bottom:-4px;width:16px;height:16px;border-radius:50%;background:var(--ink);color:var(--surface);font-size:9px;font-weight:700;display:grid;place-items:center}
+.pf .pemo{display:inline-flex;align-items:center;vertical-align:middle;margin-left:2px}.pf .pemo .emi{width:20px;height:20px;vertical-align:middle}
