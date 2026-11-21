@@ -136,9 +136,9 @@ $("lgWho").onchange=draw;$("lgAcc").onchange=draw;$("lgQ").oninput=draw;
 $("lgAccs").innerHTML=["General",...ACC.map(a=>a[1])].map(n=>`<option value="${esc(n)}">`).join("");
 
 // --- pestañas Estudio / Registro ---
-function tab(t){open=t=="log";document.body.classList.toggle("logmode",open);view.classList.toggle("hide",!open);
+function tab(t){open=t=="log";document.body.classList.toggle("logmode",t!="studio");document.body.classList.toggle("notesmode",t=="notes");view.classList.toggle("hide",!open);$("notesv").classList.toggle("hide",t!="notes");if(t=="notes"&&window.onNotesTab)setTimeout(onNotesTab,0);
  document.querySelectorAll("#tabs button").forEach(b=>{b.classList.toggle("on",b.dataset.tab==t);b.setAttribute("aria-selected",b.dataset.tab==t)});
  clearInterval(timer);if(open){load();timer=setInterval(()=>{if(!document.hidden)load()},8000)}try{sessionStorage.setItem("cs_tab",t)}catch{}}
 $("tabs").onclick=e=>{const b=e.target.closest("button");if(b)tab(b.dataset.tab)};
-try{if(sessionStorage.getItem("cs_tab")=="log")tab("log")}catch{}
+try{const t=sessionStorage.getItem("cs_tab");if(t&&t!="studio")setTimeout(()=>tab(t),0)}catch{}
 })();
