@@ -56,8 +56,8 @@ function closeWho(pick){const w=$("who");clearTimeout(whoT);w.classList.remove("
 $("whoGrid").onclick=e=>{const b=e.target.closest(".pf");if(!b)return;if(b.id=="pfAdd")return openEditor(null);const p=PROFILES.find(x=>x.id==b.dataset.id);if(!p)return;
  if(editing)return openEditor(p);ME=p.id;try{localStorage.setItem(ME_KEY,ME)}catch{}refreshMe();closeWho(b);renderFeed();refreshMark()};
 $("whoEdit").onclick=()=>{editing=!editing;renderWho()};$("meBtn").onclick=openWho;
-const EMOS=["img:cd","img:cd-rojo","img:diamante","img:paloma","img:ala","img:oso","img:cruz","✨","🔥","⚡","🌊","🌸","🎧","📸","☕","🚀","🦊"];let peEmo="";
-const emoHTML=e=>e&&e.startsWith("img:")?`<img class="emi" src="assets/emoji/${e.slice(4)}.png" alt="" draggable="false">`:esc(e||"");
+const EMOS=["img:cd-rojo","img:diamante","img:paloma","img:ala","img:oso","img:cruz","✨","🔥","⚡","🌊","🌸","🎧","📸","☕","🚀","🦊","🌙"];let peEmo="";
+const emoHTML=e=>(e=e=="img:cd"?"img:cd-rojo":e)&&e.startsWith("img:")?`<img class="emi" src="assets/emoji/${e.slice(4)}.png" alt="" draggable="false">`:esc(e||"");
 function renderEmo(){$("peEmo").innerHTML=`<button type="button" class="emc none${!peEmo?" on":""}" data-e="" title="${tr("Sin emoji")}" aria-label="${tr("Sin emoji")}">—</button>`+EMOS.map(e=>{const own=PROFILES.find(x=>x.id!=peId&&x.emoji==e);return`<button type="button" class="emc${e==peEmo?" on":""}" data-e="${e}" ${own?`disabled title="${esc(own.name)}"`:""}>${emoHTML(e)}${own?`<span class="own">${esc(ini(own.name))}</span>`:""}</button>`}).join("")}
 $("peEmo").onclick=e=>{const b=e.target.closest(".emc");if(!b||b.disabled)return;peEmo=b.dataset.e;renderEmo();peAv()};
 function openEditor(p){peId=p?p.id:null;peEmo=p&&p.emoji||"";renderEmo();peLang=p?p.lang:LANG;peColor=p?p.color:null;$("peName").value=p?p.name:"";$("peT").textContent=tr(p?"Editar perfil":"Nuevo perfil");
