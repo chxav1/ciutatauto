@@ -78,3 +78,17 @@ export async function removeAid(aid) {
   for (const m of new Set([monthOf(now), monthOf(now - 864e5 * 31)]))
     await write(m, rows => { const n = rows.filter(x => x.aid !== aid); return n.length === rows.length ? null : n; });
 }
+
+// suma lo descargado al formato de una fila existente (Post + Historia = "Post + historia")
+export async function mergeKind(aid, kind) {
+  aid = +aid; if (!aid || !KINDS.includes(kind)) return;
+  const now = Date.now();
+  for (const m of new Set([monthOf(now), monthOf(now - 864e5 * 31)]))
+    await write(m, rows => {
+      const r = rows.find(x => x.aid === aid); if (!r) return null;
+      const has = new Set((r.kind || "").split(" + ").map(x => x.toLowerCase()));
+      kind.split(" + ").forEach(x => has.add(x.toLowerCase()));
+      const k = has.has("post") && has.has("historia") ? "Post + historia" : has.has("post") ? "Post" : "Historia";
+      if (k === r.kind) return null; r.kind = k; return rows;
+    });
+}

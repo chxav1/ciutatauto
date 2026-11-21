@@ -25,8 +25,12 @@ $("markBtn").onclick=()=>{const l=$("link").value;if(l)setMark(l,!markOf(l))};
 new MutationObserver(refreshMark).observe($("link"),{attributes:true});const _pickT=pick;pick=async x=>{const r=await _pickT(x);refreshMark();return r};
 $("go").addEventListener("click",()=>setTimeout(refreshMark,2500));
 // al descargar, se marca sola como hecha por quien la descarga
-["dlStory","dlBoth"].forEach(id=>$(id).addEventListener("click",()=>{const l=$("link").value;if(l&&!markOf(l))setMark(l,true)}));
-document.querySelector('#wpost .btn').addEventListener("click",()=>{const l=$("link").value;if(l&&!markOf(l))setMark(l,true)});
+// al descargar: se marca (si no lo estaba) y el registro apunta lo que se ha descargado
+function dlKind(k){const l=$("link").value;if(!l)return;if(!markOf(l)){window.nextKind=k;setMark(l,true)}
+ else fetch("/api/log",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({type:"kind",aid:idOf(l),kind:k})}).catch(()=>{})}
+$("dlStory").addEventListener("click",()=>dlKind("Historia"));
+$("dlBoth").addEventListener("click",()=>dlKind($("mode").value=="story"?"Historia":"Post + historia"));
+document.querySelector('#wpost .btn').addEventListener("click",()=>dlKind("Post"));
 
 // --- perfiles ---
 function refreshMe(){const p=me();$("meAv").textContent=ini(p&&p.name);$("meAv").style.setProperty("--c",p?p.color:"#9a9da5");$("meName").textContent=p?p.name:"";

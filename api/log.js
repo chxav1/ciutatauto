@@ -1,5 +1,5 @@
 // Registro de publicaciones: un archivo por mes (log/AAAA-MM.json) en Vercel Blob privado.
-import { monthOf, okMonth, read, write, clean, addRow, removeAid } from "./_logstore.js";
+import { monthOf, okMonth, read, write, clean, addRow, removeAid, mergeKind } from "./_logstore.js";
 
 export async function GET(request) {
   try {
@@ -19,6 +19,7 @@ export async function POST(request) {
       const r = await addRow(op.row, op.keep);
       return Response.json({ ok: true, ...r });
     }
+    if (op.type === "kind") { await mergeKind(op.aid, op.kind); return Response.json({ ok: true }); }
     if (op.type === "removeAid") {
       await removeAid(op.aid);
       return Response.json({ ok: true });

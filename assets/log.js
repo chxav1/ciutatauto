@@ -12,8 +12,8 @@ async function post(op){const r=await fetch("/api/log",{method:"POST",headers:{"
 // --- alta / baja automática al marcar una noticia ---
 function infoOf(link){const it=ITEMS.find(x=>x.link==link);const isCur=$("link").value==link;let acc="";
  try{acc=isCur?curAcc():(it?autoOf(it).acc:"")}catch{}
- return{aid:idOf(link),link,title:isCur?($("title").value||it?.title||""):(it?.title||""),acc:accName(acc),kind:isCur&&$("mode").value=="story"?"Historia":"Post + historia"}}
-window.logMeta=l=>{try{return infoOf(l)}catch{return{}}};
+ return{aid:idOf(link),link,title:isCur?($("title").value||it?.title||""):(it?.title||""),acc:accName(acc),kind:window.nextKind||(isCur&&$("mode").value=="story"?"Historia":"Post + historia")}}
+window.logMeta=l=>{try{return infoOf(l)}catch{return{}}finally{window.nextKind=null}};
 {const _sm=window.setMark;window.setMark=async(l,on)=>{await _sm(l,on);if(open)load()};}
 {const _ap=apply;apply=j=>{_ap(j);if(open&&j&&!j.same)setTimeout(load,150)};}
 
