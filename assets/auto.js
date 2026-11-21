@@ -35,6 +35,7 @@ async function run(){if(busy)return;busy=true;
   const it=ITEMS.find(x=>x.link==l);if(!it||markOf(l)||!ME)continue;
   try{if($("mode").value!="both")document.querySelector('.seg [data-v="both"]')?.click();
    await pick(it);await wait(600);if(!photo){toast("Modo auto: sin foto, revisa “"+it.title.slice(0,40)+"…”");continue}
+   try{await window.fxReady;await wait(300)}catch{}
    await idle();$("dlBoth").click();await wait(800);await idle();await wait(400);
    if(!markOf(l))await setMark(l,true);
    copyNow($("copy").value);
