@@ -455,3 +455,11 @@ body.logmode .tabs{margin-right:auto}
 .emc{position:relative}.emc:disabled{opacity:.35;cursor:not-allowed;transform:none}
 .emc .own{position:absolute;right:-4px;bottom:-4px;width:16px;height:16px;border-radius:50%;background:var(--ink);color:var(--surface);font-size:9px;font-weight:700;display:grid;place-items:center}
 .pf .pemo{display:inline-flex;align-items:center;vertical-align:middle;margin-left:2px}.pf .pemo .emi{width:20px;height:20px;vertical-align:middle}
+/* modo auto */
+.autob{gap:7px;font-size:13px}
+.autob i{width:8px;height:8px;border-radius:50%;background:var(--soft);transition:background .2s}
+.autob.on{color:var(--p);border-color:color-mix(in srgb,var(--p) 45%,var(--line))}
+.autob.on i{background:var(--p);animation:autop 1.6s ease-in-out infinite}
+@keyframes autop{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--p) 55%,transparent)}60%{box-shadow:0 0 0 6px transparent}}
+body.logmode #autoBtn{display:none!important}
+@media(max-width:640px){.autob{order:2;margin-left:auto}.autob:not(.hide)~.smp{margin-left:0}}
