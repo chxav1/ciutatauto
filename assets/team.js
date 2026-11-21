@@ -36,7 +36,7 @@ document.querySelector('#wpost .btn').addEventListener("click",()=>dlKind("Post"
 function refreshMe(){const p=me();$("meAv").textContent=ini(p&&p.name);$("meAv").style.setProperty("--c",p?p.color:"#9a9da5");$("meName").textContent=p?p.name:"";
  if(p&&p.lang!==LANG)setLang(p.lang)}
 function renderWho(){const g=$("whoGrid");$("who").classList.toggle("editing",editing);
- g.innerHTML=PROFILES.map((p,i)=>`<button class="pf" data-id="${p.id}" style="--c:${p.color};--i:${i}"><span class="tile"><i class="blob"></i><b class="L">${esc(ini(p.name))}</b>${p.emoji?`<em class="emo">${esc(p.emoji)}</em>`:""}</span>${esc(p.name)}</button>`).join("")+
+ g.innerHTML=PROFILES.map((p,i)=>`<button class="pf" data-id="${p.id}" style="--c:${p.color};--i:${i}"><span class="tile"><i class="dot"></i><b class="L">${esc(ini(p.name))}</b></span>${esc(p.name)}${p.emoji?` <span class="pemo">${esc(p.emoji)}</span>`:""}</button>`).join("")+
   `<button class="pf add" id="pfAdd" style="--i:${PROFILES.length}"><span class="tile">+</span>${tr("Añadir perfil")}</button>`;
  $("whoEdit").textContent=tr(editing?"Listo":"Gestionar perfiles");$("whoEdit").classList.toggle("hide",!PROFILES.length)}
 const HI={es:{m:["Buenos días","Bon dia por aquí","Buenos días, equipo","Arrancamos la mañana","Café en mano y a por ello","Buenos días, que hay noticias","Mañana nueva, posts nuevos","Hoy toca contar Tarragona"],t:["Buenas tardes","Buenas tardes, equipo","Seguimos con la tarde","La tarde también tiene noticias","Un último empujón","Vamos a por la tarde"],n:["Buenas noches","Turno de noche, qué cracks","Todavía por aquí","Última ronda de noticias","La noche también informa"],a:["Qué alegría verte","Hola de nuevo","Listos para publicar","Que no se escape ninguna noticia","Hoy va a quedar todo muy bonito","A por un buen día de redes","Las historias no se suben solas","Hagamos que se lea todo"]},
@@ -66,7 +66,7 @@ function openEditor(p){peId=p?p.id:null;peEmo=p&&p.emoji||"";renderEmo();peLang=
  renderColors();peAv();$("pedit").classList.remove("hide");setTimeout(()=>$("peName").focus(),50)}
 function renderColors(){$("peColors").innerHTML=PALETTE.map(([c,es,ca])=>{const own=PROFILES.find(x=>x.id!=peId&&cdist(x.color,c)<90);
  return `<button type="button" class="swc${c==peColor?" on":""}" style="--c:${c}" data-c="${c}" ${own?"disabled":""} aria-label="${LANG=="ca"?ca:es}${own?" · "+esc(own.name):""}" title="${LANG=="ca"?ca:es}${own?" · "+esc(own.name):""}">${own?`<span class="own">${esc(ini(own.name))}</span>`:""}</button>`}).join("")}
-function peAv(){$("peAv").innerHTML=esc(ini($("peName").value))+(peEmo?`<em class="emo">${peEmo}</em>`:"");$("peAv").style.setProperty("--c",peColor||"#9a9da5")}
+function peAv(){$("peAv").textContent=ini($("peName").value);$("peAv").style.setProperty("--c",peColor||"#9a9da5")}
 $("peColors").onclick=e=>{const b=e.target.closest(".swc");if(!b||b.disabled)return;peColor=b.dataset.c;renderColors();peAv()};
 $("peLang").onclick=e=>{const b=e.target.closest("button");if(!b)return;peLang=b.dataset.v;[...$("peLang").children].forEach(x=>x.classList.toggle("on",x==b))};
 $("peName").oninput=peAv;$("peCancel").onclick=()=>$("pedit").classList.add("hide");
@@ -147,10 +147,6 @@ window.snd=snd;
 {const _sm=window.setMark;window.setMark=async(l,on)=>{const b=!!markOf(l);await _sm(l,on);if(!!markOf(l)!=b)snd(on?"done":"undo")};}
 {const _sv=save;save=(...a)=>{snd("save");return _sv(...a)};}
 {const _sf=shareFiles;shareFiles=async f=>{const r=await _sf(f);if(r)snd("save");return r};}
-
-// --- inclinación suave de las fichas de perfil ---
-$("whoGrid").addEventListener("pointermove",e=>{const t=e.target.closest(".pf:not(.add) .tile");if(!t)return;const r=t.getBoundingClientRect();t.style.setProperty("--rx",((e.clientY-r.top)/r.height-.5)*-14+"deg");t.style.setProperty("--ry",((e.clientX-r.left)/r.width-.5)*14+"deg")});
-$("whoGrid").addEventListener("pointerout",e=>{const t=e.target.closest(".tile");if(t){t.style.removeProperty("--rx");t.style.removeProperty("--ry")}});
 
 // --- inicio ---
 (async()=>{try{ME=localStorage.getItem(ME_KEY)}catch{}await pull();if(me()){setLang(me().lang);refreshMe()}setTimeout(openWho,1700);refreshMark()})();
