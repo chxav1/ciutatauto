@@ -36,7 +36,7 @@ document.querySelector('#wpost .btn').addEventListener("click",()=>dlKind("Post"
 function refreshMe(){const p=me();$("meAv").textContent=ini(p&&p.name);$("meAv").style.setProperty("--c",p?p.color:"#9a9da5");$("meName").textContent=p?p.name:"";
  if(p&&p.lang!==LANG)setLang(p.lang)}
 function renderWho(){const g=$("whoGrid");$("who").classList.toggle("editing",editing);
- g.innerHTML=PROFILES.map((p,i)=>`<button class="pf" data-id="${p.id}" style="--c:${p.color};--i:${i}"><span class="tile">${esc(ini(p.name))}</span>${esc(p.name)}</button>`).join("")+
+ g.innerHTML=PROFILES.map((p,i)=>`<button class="pf" data-id="${p.id}" style="--c:${p.color};--i:${i}"><span class="tile"><i class="blob"></i><b class="L">${esc(ini(p.name))}</b>${p.emoji?`<em class="emo">${esc(p.emoji)}</em>`:""}</span>${esc(p.name)}</button>`).join("")+
   `<button class="pf add" id="pfAdd" style="--i:${PROFILES.length}"><span class="tile">+</span>${tr("Añadir perfil")}</button>`;
  $("whoEdit").textContent=tr(editing?"Listo":"Gestionar perfiles");$("whoEdit").classList.toggle("hide",!PROFILES.length)}
 const HI={es:{m:["Buenos días","Bon dia por aquí","Buenos días, equipo","Arrancamos la mañana","Café en mano y a por ello","Buenos días, que hay noticias","Mañana nueva, posts nuevos","Hoy toca contar Tarragona"],t:["Buenas tardes","Buenas tardes, equipo","Seguimos con la tarde","La tarde también tiene noticias","Un último empujón","Vamos a por la tarde"],n:["Buenas noches","Turno de noche, qué cracks","Todavía por aquí","Última ronda de noticias","La noche también informa"],a:["Qué alegría verte","Hola de nuevo","Listos para publicar","Que no se escape ninguna noticia","Hoy va a quedar todo muy bonito","A por un buen día de redes","Las historias no se suben solas","Hagamos que se lea todo"]},
@@ -46,28 +46,35 @@ function greet(){let l="es";try{const id=localStorage.getItem(ME_KEY),p=PROFILES
  t=null;try{const last=sessionStorage.getItem("cs_hi");do t=pool[Math.random()*pool.length|0];while(t==last&&pool.length>1);sessionStorage.setItem("cs_hi",t)}catch{t=pool[0]}
  t=(l=="es"?"¡":"")+t+"!";
  $("whoHi").innerHTML=t.split(" ").map((w,i)=>`<span style="--w:${i}">${esc(w)}</span>`).join(" ")}
+function askConfirm(title,text,ok){return new Promise(res=>{$("cfmT").textContent=title;$("cfmX").textContent=text;$("cfmOk").textContent=ok||tr("Eliminar");const m=$("cfm");m.classList.remove("hide");setTimeout(()=>$("cfmNo").focus(),30);
+ const done=v=>{m.classList.add("hide");$("cfmOk").onclick=$("cfmNo").onclick=m.onclick=null;removeEventListener("keydown",k);res(v)},k=e=>{if(e.key=="Escape"){e.stopPropagation();done(false)}};
+ $("cfmOk").onclick=()=>done(true);$("cfmNo").onclick=()=>done(false);m.onclick=e=>{if(e.target==m)done(false)};addEventListener("keydown",k,true)})}
+window.askConfirm=askConfirm;
 let whoT=0;function openWho(){greet();editing=false;clearTimeout(whoT);const w=$("who");w.classList.remove("leave");renderWho();w.classList.remove("hide");w.classList.add("show");document.body.classList.add("whoopen");whoT=setTimeout(()=>w.classList.remove("show"),900)}
 function closeWho(pick){const w=$("who");clearTimeout(whoT);w.classList.remove("show");if(pick)pick.classList.add("pick");w.classList.add("leave");document.body.classList.remove("whoopen");
  whoT=setTimeout(()=>{w.classList.add("hide");w.classList.remove("leave");w.querySelectorAll(".pick").forEach(x=>x.classList.remove("pick"));document.body.classList.add("enter");setTimeout(()=>document.body.classList.remove("enter"),700)},480)}
 $("whoGrid").onclick=e=>{const b=e.target.closest(".pf");if(!b)return;if(b.id=="pfAdd")return openEditor(null);const p=PROFILES.find(x=>x.id==b.dataset.id);if(!p)return;
  if(editing)return openEditor(p);ME=p.id;try{localStorage.setItem(ME_KEY,ME)}catch{}refreshMe();closeWho(b);renderFeed();refreshMark()};
 $("whoEdit").onclick=()=>{editing=!editing;renderWho()};$("meBtn").onclick=openWho;
-function openEditor(p){peId=p?p.id:null;peLang=p?p.lang:LANG;peColor=p?p.color:null;$("peName").value=p?p.name:"";$("peT").textContent=tr(p?"Editar perfil":"Nuevo perfil");
+const EMOS=["✨","🔥","⚡","🌊","🌿","🌸","🍀","☀️","🌙","⭐","🎧","🎨","📸","🎬","📰","✏️","☕","🍕","🚀","🎯","🦊","🐙","🐼","🦋"];let peEmo="";
+function renderEmo(){$("peEmo").innerHTML=`<button type="button" class="emc none${!peEmo?" on":""}" data-e="" title="${tr("Sin emoji")}" aria-label="${tr("Sin emoji")}">—</button>`+EMOS.map(e=>`<button type="button" class="emc${e==peEmo?" on":""}" data-e="${e}">${e}</button>`).join("")}
+$("peEmo").onclick=e=>{const b=e.target.closest(".emc");if(!b)return;peEmo=b.dataset.e;renderEmo();peAv()};
+function openEditor(p){peId=p?p.id:null;peEmo=p&&p.emoji||"";renderEmo();peLang=p?p.lang:LANG;peColor=p?p.color:null;$("peName").value=p?p.name:"";$("peT").textContent=tr(p?"Editar perfil":"Nuevo perfil");
  $("peDel").classList.toggle("hide",!p);$("peErr").textContent="";
  [...$("peLang").children].forEach(b=>b.classList.toggle("on",b.dataset.v==peLang));
  if(!peColor){const free=PALETTE.find(([c])=>!PROFILES.some(x=>cdist(x.color,c)<90));peColor=free?free[0]:PALETTE[0][0]}
  renderColors();peAv();$("pedit").classList.remove("hide");setTimeout(()=>$("peName").focus(),50)}
 function renderColors(){$("peColors").innerHTML=PALETTE.map(([c,es,ca])=>{const own=PROFILES.find(x=>x.id!=peId&&cdist(x.color,c)<90);
  return `<button type="button" class="swc${c==peColor?" on":""}" style="--c:${c}" data-c="${c}" ${own?"disabled":""} aria-label="${LANG=="ca"?ca:es}${own?" · "+esc(own.name):""}" title="${LANG=="ca"?ca:es}${own?" · "+esc(own.name):""}">${own?`<span class="own">${esc(ini(own.name))}</span>`:""}</button>`}).join("")}
-function peAv(){$("peAv").textContent=ini($("peName").value);$("peAv").style.setProperty("--c",peColor||"#9a9da5")}
+function peAv(){$("peAv").innerHTML=esc(ini($("peName").value))+(peEmo?`<em class="emo">${peEmo}</em>`:"");$("peAv").style.setProperty("--c",peColor||"#9a9da5")}
 $("peColors").onclick=e=>{const b=e.target.closest(".swc");if(!b||b.disabled)return;peColor=b.dataset.c;renderColors();peAv()};
 $("peLang").onclick=e=>{const b=e.target.closest("button");if(!b)return;peLang=b.dataset.v;[...$("peLang").children].forEach(x=>x.classList.toggle("on",x==b))};
 $("peName").oninput=peAv;$("peCancel").onclick=()=>$("pedit").classList.add("hide");
 $("peForm").onsubmit=async e=>{e.preventDefault();const btn=$("peSave");btn.disabled=true;$("peErr").textContent="";
- try{const j=await api({type:"profile",profile:{id:peId,name:$("peName").value,color:peColor,lang:peLang}});$("pedit").classList.add("hide");
+ try{const j=await api({type:"profile",profile:{id:peId,name:$("peName").value,color:peColor,lang:peLang,emoji:peEmo}});$("pedit").classList.add("hide");
   if(!peId||peId==ME){ME=j.id;try{localStorage.setItem(ME_KEY,ME)}catch{}setLang(peLang);refreshMe()}
   if(!peId){closeWho()}else renderWho();toast("Perfil guardado")}catch(err){$("peErr").textContent=err.message;renderColors()}finally{btn.disabled=false}};
-$("peDel").onclick=async()=>{if(!peId)return;const p=PROFILES.find(x=>x.id==peId);if(!confirm((LANG=="ca"?"Eliminar el perfil de ":"¿Eliminar el perfil de ")+(p?p.name:"")+"?"))return;
+$("peDel").onclick=async()=>{if(!peId)return;const p=PROFILES.find(x=>x.id==peId);if(!await askConfirm((LANG=="ca"?"Eliminar el perfil de ":"¿Eliminar el perfil de ")+(p?p.name:"")+"?",tr("Sus noticias hechas seguirán marcadas, pero ya no se podrá entrar con este perfil.")))return;
  try{await api({type:"deleteProfile",id:peId});if(peId==ME){ME=null;try{localStorage.removeItem(ME_KEY)}catch{}}$("pedit").classList.add("hide");renderWho();toast("Perfil eliminado")}catch(err){$("peErr").textContent=err.message}};
 addEventListener("keydown",e=>{if(e.key=="Escape"&&!$("pedit").classList.contains("hide"))$("pedit").classList.add("hide")});
 
@@ -140,6 +147,10 @@ window.snd=snd;
 {const _sm=window.setMark;window.setMark=async(l,on)=>{const b=!!markOf(l);await _sm(l,on);if(!!markOf(l)!=b)snd(on?"done":"undo")};}
 {const _sv=save;save=(...a)=>{snd("save");return _sv(...a)};}
 {const _sf=shareFiles;shareFiles=async f=>{const r=await _sf(f);if(r)snd("save");return r};}
+
+// --- inclinación suave de las fichas de perfil ---
+$("whoGrid").addEventListener("pointermove",e=>{const t=e.target.closest(".pf:not(.add) .tile");if(!t)return;const r=t.getBoundingClientRect();t.style.setProperty("--rx",((e.clientY-r.top)/r.height-.5)*-14+"deg");t.style.setProperty("--ry",((e.clientX-r.left)/r.width-.5)*14+"deg")});
+$("whoGrid").addEventListener("pointerout",e=>{const t=e.target.closest(".tile");if(t){t.style.removeProperty("--rx");t.style.removeProperty("--ry")}});
 
 // --- inicio ---
 (async()=>{try{ME=localStorage.getItem(ME_KEY)}catch{}await pull();if(me()){setLang(me().lang);refreshMe()}setTimeout(openWho,1700);refreshMark()})();

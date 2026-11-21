@@ -35,7 +35,9 @@ function apply(s, op) {
     if (others.some(x => x.name.toLowerCase() === name.toLowerCase())) throw new Error("Ese nombre ya existe");
     if (others.some(x => dist(x.color, p.color) < MIN_DIST)) throw new Error("Ese color ya lo usa otra persona o es muy parecido");
     const i = d.profiles.findIndex(x => x.id === p.id);
-    const np = { id: p.id && i >= 0 ? p.id : "u" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, color: p.color.toLowerCase(), lang };
+    const emo = String(p.emoji || "").trim();
+    const emoji = emo && [...emo].length <= 8 && /\p{Extended_Pictographic}/u.test(emo) ? emo : "";
+    const np = { id: p.id && i >= 0 ? p.id : "u" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, color: p.color.toLowerCase(), lang, emoji };
     if (i >= 0) d.profiles[i] = { ...d.profiles[i], ...np }; else d.profiles.push({ ...np, created: Date.now() });
     d._last = np.id;
   } else if (op.type === "deleteProfile") {
