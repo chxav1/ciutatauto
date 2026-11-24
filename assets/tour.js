@@ -4,7 +4,6 @@ const L=(es,ca)=>typeof LANG!="undefined"&&LANG=="ca"?ca:es;
 const q=s=>document.querySelector(s),vis=e=>e&&e.getClientRects().length&&getComputedStyle(e).visibility!="hidden";
 const el=(h)=>{const d=document.createElement("div");d.innerHTML=h.trim();return d.firstChild};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const PLAY='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>';
 
 const STEPS=[
  {t:null,h:["Bienvenido a Ciutat Studio","Benvingut a Ciutat Studio"],p:["Te enseño lo importante en un minuto. Puedes saltar cuando quieras.","T'ensenyo el més important en un minut. Pots saltar quan vulguis."]},
@@ -18,7 +17,7 @@ const STEPS=[
  {t:"#res2, .quick",h:["El copy","El copy"],p:["Cópialo junto al enlace del sticker y a publicar.","Copia'l amb l'enllaç de l'sticker i a publicar."]},
  {t:"#tabs",h:["Registro y Notas","Registre i Notes"],p:["Registro: todo lo publicado, como un Excel. Notas: tareas y avisos del equipo.","Registre: tot el publicat, com un Excel. Notes: tasques i avisos de l'equip."]},
  {t:"#simpleBtn, #themeBtn",h:["A tu manera","A la teva manera"],p:["Modo simple para ir al grano y modo oscuro para la noche.","Mode simple per anar al gra i mode fosc per a la nit."]},
- {t:"#helpBtn",h:["¿Dudas?","Dubtes?"],p:["Desde aquí vuelves a ver el tutorial o el vídeo cuando quieras.","Des d'aquí tornes a veure el tutorial o el vídeo quan vulguis."]}
+ {t:"#helpBtn",h:["¿Dudas?","Dubtes?"],p:["Desde aquí vuelves a ver el tutorial cuando quieras.","Des d'aquí tornes a veure el tutorial quan vulguis."]}
 ];
 
 async function openFirst(){
@@ -93,74 +92,45 @@ card.querySelector(".tr-back").onclick=()=>go(idx-1);
 card.querySelector(".tr-x").onclick=()=>end(false);
 addEventListener("resize",()=>place());addEventListener("scroll",()=>place(),true);
 
-/* ---------- vídeo ---------- */
-const vid=el(`<div class="trv" hidden role="dialog" aria-modal="true" aria-label="Vídeo de presentación"><div class="trv-in">
-<video controls playsinline preload="none" poster="assets/intro.jpg"><source src="assets/intro.mp4" type="video/mp4"></video>
-<button type="button" class="trv-x" aria-label="Cerrar">✕</button></div></div>`);
-document.body.append(vid);const V=vid.querySelector("video");
-function video(){closeAll();vid.hidden=false;requestAnimationFrame(()=>vid.classList.add("on"));V.currentTime=0;V.play().catch(()=>{})}
-function closeVid(){V.pause();vid.classList.remove("on");setTimeout(()=>vid.hidden=true,250)}
-vid.querySelector(".trv-x").onclick=closeVid;vid.onclick=e=>{if(e.target==vid)closeVid()};
-V.onended=()=>setTimeout(closeVid,600);
-
 /* ---------- bienvenida ---------- */
 const wel=el(`<div class="modal hide tr-wel" role="dialog" aria-modal="true" aria-labelledby="trWT"><div class="mcard tr-wc">
 <div class="tr-dot">?</div><h2 id="trWT"></h2><p class="hint"></p>
-<button type="button" class="btn pri tr-wt"></button><button type="button" class="btn line tr-wv"></button><button type="button" class="lnk tr-wn"></button></div></div>`);
+<button type="button" class="btn pri tr-wt"></button><button type="button" class="lnk tr-wn"></button></div></div>`);
 document.body.append(wel);
 function welcome(){
  wel.querySelector("h2").textContent=L("¿Eres nuevo?","Ets nou?");
  wel.querySelector(".hint").textContent=L("Aprende a usar Ciutat Studio en un minuto.","Aprèn a fer servir Ciutat Studio en un minut.");
  wel.querySelector(".tr-wt").textContent=L("Ver tutorial","Veure el tutorial");
- wel.querySelector(".tr-wv").innerHTML=PLAY+L("Ver vídeo de presentación","Veure el vídeo de presentació");
  wel.querySelector(".tr-wn").textContent=L("Ahora no","Ara no");
  wel.classList.remove("hide");wel.querySelector(".tr-wt").focus();
 }
-wel.querySelector(".tr-wt").onclick=start;wel.querySelector(".tr-wv").onclick=video;
+wel.querySelector(".tr-wt").onclick=start;
 wel.querySelector(".tr-wn").onclick=()=>wel.classList.add("hide");
 wel.onclick=e=>{if(e.target==wel)wel.classList.add("hide")};
 
 /* ---------- botón de ayuda (siempre disponible) ---------- */
-const hb=el(`<button class="tbtn thm" id="helpBtn" type="button" aria-haspopup="menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M9.4 9.3a2.7 2.7 0 0 1 5.2.9c0 1.8-2.6 2.3-2.6 3.8"/><path d="M12 17.2h.01"/></svg></button>`);
+const hb=el(`<button class="tbtn thm" id="helpBtn" type="button" ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M9.4 9.3a2.7 2.7 0 0 1 5.2.9c0 1.8-2.6 2.3-2.6 3.8"/><path d="M12 17.2h.01"/></svg></button>`);
 const tb=q("#themeBtn");tb.parentNode.insertBefore(hb,tb);
-const menu=el(`<div class="tr-menu hide" role="menu"><button type="button" role="menuitem" data-a="t"></button><button type="button" role="menuitem" data-a="v"></button></div>`);
-document.body.append(menu);
-function closeMenu(){menu.classList.add("hide");hb.setAttribute("aria-expanded","false")}
-hb.onclick=e=>{e.stopPropagation();if(!menu.classList.contains("hide"))return closeMenu();
- const[t,v]=menu.children;
- t.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 12h10M4 19h7"/></svg>'+L("Ver tutorial","Veure el tutorial");
- v.innerHTML=PLAY+L("Vídeo de presentación","Vídeo de presentació");
- const b=hb.getBoundingClientRect();menu.classList.remove("hide");
- menu.style.top=b.bottom+8+"px";menu.style.left=Math.max(12,Math.min(innerWidth-menu.offsetWidth-12,b.right-menu.offsetWidth))+"px";
- hb.setAttribute("aria-expanded","true")};
-menu.onclick=e=>{const a=e.target.closest("button")?.dataset.a;closeMenu();if(a=="t")start();if(a=="v")video()};
-document.addEventListener("click",e=>{if(!menu.contains(e.target))closeMenu()});
-function setHbLabel(){const s=L("Ayuda: tutorial y vídeo","Ajuda: tutorial i vídeo");hb.title=s;hb.setAttribute("aria-label",s)}setHbLabel();
+hb.onclick=()=>start();
+function setHbLabel(){const s=L("Ver tutorial","Veure el tutorial");hb.title=s;hb.setAttribute("aria-label",s)}setHbLabel();
 
-function closeAll(){closeMenu();wel.classList.add("hide");if(!vid.hidden)closeVid();if(idx>=0)end(false)}
+function closeAll(){wel.classList.add("hide");if(idx>=0)end(false)}
 
 /* ---------- teclado: el tutorial y el vídeo se quedan las teclas ---------- */
 addEventListener("keydown",e=>{
- if(!vid.hidden){if(e.key=="Escape"){closeVid();e.preventDefault()}e.stopImmediatePropagation();return}
  if(!wel.classList.contains("hide")){if(e.key=="Escape")wel.classList.add("hide");e.stopImmediatePropagation();return}
- if(idx<0){if(e.key=="Escape")closeMenu();return}
+ if(idx<0)return;
  e.stopImmediatePropagation();
  if(e.key=="ArrowRight"||e.key=="Enter"){e.preventDefault();go(idx+1)}
  else if(e.key=="ArrowLeft"){e.preventDefault();go(idx-1)}
  else if(e.key=="Escape")end(false);
 },true);
 
-/* ---------- pantalla de perfiles: «¿Eres nuevo?» ---------- */
-let pending=false,fresh=false;
-const pill=el(`<button type="button" class="tr-pill"></button>`);
-function pillText(){pill.innerHTML=pending?L("Perfecto: elige o crea tu perfil y empezamos","Perfecte: tria o crea el teu perfil i comencem"):L("¿Eres nuevo? <b>Ver tutorial</b>","Ets nou? <b>Veure el tutorial</b>")+'<span class="tr-sep"></span><span class="tr-pv">'+PLAY+L("Vídeo","Vídeo")+"</span>";pill.classList.toggle("ok",pending)}
-pill.onclick=e=>{if(e.target.closest(".tr-pv")){video();return}pending=!pending;pillText()};
-const we=q("#whoEdit");we.parentNode.insertBefore(pill,we);pillText();
-const _open=openWho;openWho=function(){pending=false;const r=_open.apply(this,arguments);pillText();setHbLabel();return r};
-q("#peForm").addEventListener("submit",()=>{fresh=typeof peId=="undefined"||!peId},true);
+/* ---------- perfil nuevo: «¿Eres nuevo?» una sola vez ---------- */
+let fresh=false;
+q("#peForm").addEventListener("submit",()=>{fresh=!peId},true);
 const _close=closeWho;closeWho=function(pick){const r=_close.apply(this,arguments);setHbLabel();
- if(pending){pending=false;setTimeout(start,900)}else if(fresh&&!pick){setTimeout(welcome,900)}
+ if(fresh&&!pick&&typeof ME!="undefined"&&ME){const k="cs_tour_"+ME;let seen=false;try{seen=!!localStorage.getItem(k);localStorage.setItem(k,"1")}catch{}if(!seen)setTimeout(welcome,900)}
  fresh=false;return r};
-
-window.Tour={start,video,welcome};
+window.Tour={start,welcome};
 })();
