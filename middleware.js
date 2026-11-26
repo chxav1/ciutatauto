@@ -2,7 +2,7 @@
 import { next, ipAddress } from "@vercel/functions";
 import { get, put } from "@vercel/blob";
 
-export const config = { runtime: "nodejs", matcher: ["/((?!assets/icon\\.svg|favicon\\.ico).*)"] };
+export const config = { runtime: "nodejs", matcher: ["/((?!assets/|favicon\\.ico).*)"] };
 
 const PASS_HASH = "f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae"; // sha256("111")
 const COOKIE = "cs_ok", IPS = "auth/ips.json";

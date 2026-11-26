@@ -608,3 +608,7 @@ body.touring{overflow:hidden}
 @keyframes trPop{from{transform:scale(.4);opacity:0}}
 @media(prefers-reduced-motion:reduce){.tr-hole,.tr-card{transition:none}}
 .tr[hidden]{display:none!important}
+.fseg button{display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}.fseg b{margin-left:0;line-height:1}
+html[data-theme=dark] .btn.pri:hover{background:#cc0070}html[data-theme=dark] .btn.danger:hover{background:#b91c1c}html[data-theme=dark] .btn.line:hover{background:var(--field)}
+@media(hover:none){.btn.pri:hover,html[data-theme=dark] .btn.pri:hover{background:var(--p)}.btn:active{transform:scale(.97)}}
+.tabs button{display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}.tabs .tbadge{margin:0}
