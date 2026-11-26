@@ -83,7 +83,7 @@ function copyText(){$("copy").value=`ℹ️  ${$("title").value.trim()}\n\n👉 
 async function draw(){if(!photo)return;await document.fonts.load(F(40));const st=$("mode").value=="story";
  $("wpost").classList.toggle("hide",st);if(!st)await render("post",$("cpost"));await render("story",$("cstory"));copyText();
  $("res").classList.remove("hide");$("empty").classList.add("hide")}
-$("go").onclick=async()=>{$("msg").textContent="";$("go").disabled=true;$("go").textContent="Cargando…";
+$("go").onclick=async()=>{$("msg").textContent="";resetCfg();$("go").disabled=true;$("go").textContent="Cargando…";
  try{data=await getArticle($("url").value.trim());
   
   $("title").value=data.title;auto=guess(data.path,data.title,data.sub);$("link").value=data.url;
@@ -147,7 +147,10 @@ const EDN={"La Ciutat de Tarragona":"tarragona","La Ciutat de Barcelona":"barcel
 const EDLBL={laciutatdetarragona:"Tarragona",laciutatdebarcelona:"Barcelona",laciutatdelleida:"Lleida",laciutatdegirona:"Girona",laciutatdelpenedesgarraf:"Penedès-Garraf","laciutat-terres-de-lebre":"Terres de l'Ebre","laciutat-de-catalunya-central":"Catalunya Central",laciutatandorra:"Andorra",catalunya:"Catalunya",espanya:"Espanya",mon:"Món",politica:"Política",cultura:"Cultura",entrevistes:"Entrevistes",opinio:"Opinió"};
 // en la lista: la edición del enlace (laciutatde…), solo para identificarla
 function accLabel(x){try{const seg=new URL(x.link).pathname.split("/").filter(s=>s&&s!="es")[0]||"";return EDLBL[seg]||seg.replace(/^laciutat-?(de-?|del-?|d-?)?/,"").replace(/-/g," ").replace(/^./,c=>c.toUpperCase())}catch{return ""}}
-async function pick(x){cur=x.link;renderFeed();$("url").value=x.link;$("msg").textContent="";
+// cada publicación empieza con la configuración por defecto
+function resetCfg(){$("locAuto").checked=true;$("fxAuto").checked=true;$("acc").value="auto";$("fitBig").checked=true;$("anim").checked=true;$("arrowChk").checked=true;
+ $("frame").value="auto";document.querySelectorAll("#frameSeg button").forEach(b=>b.classList.toggle("on",b.dataset.v=="auto"));$("file").value=""}
+async function pick(x){cur=x.link;resetCfg();renderFeed();$("url").value=x.link;$("msg").textContent="";
  const path=new URL(x.link).pathname;auto=autoOf(x);
  data={title:x.title,sub:x.sub,url:x.link,path};$("title").value=x.title;$("link").value=x.link;
  try{const src=await imageSrc(x.img);if(src)await setPhoto(src);else throw 0}catch{try{const d=await getArticle(x.link);if(d.image)await setPhoto(d.image);else{photo=null;$("msg").textContent="No he podido coger la foto: añádela con «Añadir imagen»."}}catch(e){$("msg").textContent=e.message}}
