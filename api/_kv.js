@@ -7,7 +7,7 @@ let sql = null, ready = null;
 function db() {
   const url = process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING;
   if (!url) throw new Error("Falta conectar la base de datos (Supabase)");
-  if (!sql) sql = postgres(url.replace(/[?&]sslmode=[^&]*/, ""), { prepare: false, max: 3, idle_timeout: 20, connect_timeout: 10, ssl: /sslmode=disable/.test(url) ? false : { rejectUnauthorized: false } });
+  if (!sql) sql = postgres(url.split("?")[0], { prepare: false, max: 3, idle_timeout: 20, connect_timeout: 10, ssl: /sslmode=disable/.test(url) ? false : { rejectUnauthorized: false } });
   if (!ready) ready = sql`create table if not exists cs_kv (k text primary key, d text not null, v text not null, updated_at timestamptz default now())`.catch(e => { ready = null; throw e; });
   return ready.then(() => sql);
 }
