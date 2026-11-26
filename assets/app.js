@@ -199,6 +199,7 @@ let VCFGS=null;const VBAD=new Set();async function encCfgs(W,H){if(VCFGS)return 
   const k={codec,width:W,height:H,bitrate:8e6,framerate:VID.fps,latencyMode:lm,hardwareAcceleration:hw,avc:{format:"avc"}};
   try{if((await VideoEncoder.isConfigSupported(k)).supported){VCFGS.push(k);if(VCFGS.length>=4)return VCFGS}}catch{}}
  return VCFGS}
+let HMEP=null;const loadHME=()=>HMEP||(HMEP=new Promise((ok,ko)=>{if(window.HME)return ok(HME);const sc=document.createElement("script");sc.src="assets/vendor/h264-mp4-encoder.web.js";sc.onload=()=>ok(window.HME);sc.onerror=()=>{HMEP=null;ko(new Error("no x264"))};document.head.append(sc)}));
 let VTOK=0,VJOB=null,VPROG=0;
 // exporta el vídeo; si cambia algo a mitad (tok), se cancela
 async function exportMP4(tok=VTOK,show=true){const W=1080,H=1920,cv=document.createElement("canvas");cv.width=W;cv.height=H;const c=cv.getContext("2d",{willReadFrequently:false}),pr=$("vprog");
@@ -211,6 +212,13 @@ async function exportMP4(tok=VTOK,show=true){const W=1080,H=1920,cv=document.cre
       if(enc.encodeQueueSize>24)await new Promise(r=>enc.addEventListener("dequeue",r,{once:true}));if(n%12==0)step(n/VID.frames);if(err)throw err}
      await enc.flush();}finally{if(enc.state!="closed")enc.close()}
     mux.finalize();step(1);return new Blob([mux.target.buffer],{type:"video/mp4"})}catch(e){if(e&&e.message=="cancel")throw e;VBAD.add(cfg);console.warn("encoder falló, pruebo otro",e)}}}
+  // navegadores antiguos (p. ej. Chrome en macOS High Sierra): H.264 por software para que siga saliendo .mp4
+  if(!(window.MediaRecorder&&(MediaRecorder.isTypeSupported("video/mp4;codecs=avc1")||MediaRecorder.isTypeSupported("video/mp4")))){
+   try{const HM=await loadHME(),enc=await HM.createH264MP4Encoder();
+    try{enc.width=W;enc.height=H;enc.frameRate=VID.fps;enc.speed=10;enc.quantizationParameter=22;enc.groupOfPictures=VID.fps*2;enc.initialize();
+     for(let n=0;n<VID.frames;n++){live();frameAt(c,n);enc.addFrameRgba(c.getImageData(0,0,W,H).data);if(n%4==0){step(n/VID.frames);await new Promise(r=>setTimeout(r,0))}}
+     enc.finalize();const out=enc.FS.readFile(enc.outputFilename);step(1);return new Blob([out],{type:"video/mp4"})}finally{try{enc.delete()}catch{}}}
+   catch(e){if(e&&e.message=="cancel")throw e;console.warn("x264 falló",e)}}
   const types=["video/mp4;codecs=avc1","video/mp4","video/webm;codecs=vp9","video/webm"],type=types.find(x=>window.MediaRecorder&&MediaRecorder.isTypeSupported(x));
   if(!type)throw new Error("Este navegador no puede crear vídeo");
   const st=cv.captureStream(VID.fps),rec=new MediaRecorder(st,{mimeType:type,videoBitsPerSecond:8e6}),parts=[];rec.ondataavailable=e=>parts.push(e.data);
