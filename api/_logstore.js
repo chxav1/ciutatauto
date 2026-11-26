@@ -1,5 +1,5 @@
 // Almacén del registro (compartido por /api/log y /api/state).
-import { get, put, BlobPreconditionFailedError } from "@vercel/blob";
+import { get, put, BlobPreconditionFailedError } from "./_kv.js";
 
 export const TZ = "Europe/Madrid";
 export const monthOf = t => new Date(t).toLocaleString("sv-SE", { timeZone: TZ }).slice(0, 7);
@@ -9,7 +9,7 @@ const cache = new Map();
 
 export async function read(m, fresh) {
   const c = cache.get(m);
-  if (!fresh && c && Date.now() - c.at < 1500) return c;
+  if (!fresh && c && Date.now() - c.at < 5000) return c;
   const r = await get(pathOf(m), { access: "private", useCache: false, ...(c && c.etag ? { ifNoneMatch: c.etag } : {}) });
   let n;
   if (!r) n = { etag: null, rows: [], at: Date.now() };

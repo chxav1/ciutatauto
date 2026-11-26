@@ -1,5 +1,5 @@
 // Estado compartido del equipo: perfiles y noticias hechas. Se guarda en Vercel Blob (privado).
-import { get, put, BlobPreconditionFailedError } from "@vercel/blob";
+import { get, put, BlobPreconditionFailedError } from "./_kv.js";
 import { addRow, removeAid } from "./_logstore.js";
 
 const PATH = "state.json";
@@ -7,7 +7,7 @@ const EMPTY = { profiles: [], marks: {} };
 let cache = { etag: null, data: EMPTY, at: 0 };
 
 async function read(fresh) {
-  if (!fresh && Date.now() - cache.at < 1500) return cache;
+  if (!fresh && Date.now() - cache.at < 5000) return cache;
   const r = await get(PATH, { access: "private", useCache: false, ...(cache.etag ? { ifNoneMatch: cache.etag } : {}) });
   if (!r) cache = { etag: null, data: EMPTY, at: Date.now() };
   else if (r.statusCode === 304) cache.at = Date.now();
@@ -49,6 +49,12 @@ function apply(s, op) {
     if (op.on) d.marks[id] = { by: op.by, at: Date.now() }; else delete d.marks[id];
     const keys = Object.keys(d.marks);
     if (keys.length > 3000) keys.sort((a, b) => d.marks[a].at - d.marks[b].at).slice(0, keys.length - 3000).forEach(k => delete d.marks[k]);
+  } else if (op.type === "restore") {
+    // recupera perfiles y hechas guardados en el navegador si la base de datos está vacía
+    if (d.profiles.length) return d;
+    const P = Array.isArray(op.profiles) ? op.profiles.slice(0, 60) : [];
+    d.profiles = P.filter(p => p && p.id && p.name).map(p => ({ id: String(p.id).slice(0, 40), name: String(p.name).slice(0, 24), color: String(p.color || "#E5007E").slice(0, 9), lang: p.lang == "es" ? "es" : "ca", emoji: String(p.emoji || "").slice(0, 40) }));
+    if (op.marks && typeof op.marks == "object") for (const [k, m] of Object.entries(op.marks).slice(-3000)) if (+k && m && !d.marks[k]) d.marks[k] = { by: String(m.by || ""), at: +m.at || Date.now() };
   } else throw new Error("Operación no válida");
   return d;
 }

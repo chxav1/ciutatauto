@@ -1,12 +1,12 @@
 // Notas del equipo (tareas, avisos, ideas). Un único archivo notes.json en Vercel Blob privado.
-import { get, put, BlobPreconditionFailedError } from "@vercel/blob";
+import { get, put, BlobPreconditionFailedError } from "./_kv.js";
 
 const PATH = "notes.json";
 let cache = { etag: null, rows: [], at: 0 };
 const strip = e => String(e || "").replace(/^W\//, "");
 
 async function read(fresh) {
-  if (!fresh && Date.now() - cache.at < 1500) return cache;
+  if (!fresh && Date.now() - cache.at < 5000) return cache;
   const r = await get(PATH, { access: "private", useCache: false, ...(cache.etag && !fresh ? { ifNoneMatch: cache.etag } : {}) });
   if (!r) cache = { etag: null, rows: [], at: Date.now() };
   else if (r.statusCode === 304) cache.at = Date.now();

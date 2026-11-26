@@ -8,9 +8,12 @@ const me=()=>PROFILES.find(p=>p.id==ME)||null;
 
 // --- servidor ---
 async function api(op){const r=await fetch("/api/state",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(op)});const j=await r.json().catch(()=>({error:"Sin conexión con el servidor"}));if(!r.ok)throw new Error(j.error||"Error");apply(j);return j}
-function apply(j){if(!j||j.same)return;try{localStorage.setItem("cs_state",JSON.stringify(j))}catch{}STV=j.v;PROFILES=j.profiles||[];MARKS=j.marks||{};renderFeed();refreshMe();refreshMark();if(!$("who").classList.contains("hide"))renderWho()}
+let SEED=null,SEEDED=false;try{SEED=JSON.parse(localStorage.getItem("cs_state")||"null")}catch{}
+function apply(j){if(!j||j.same)return;
+ if(j.profiles&&!j.profiles.length&&!SEEDED&&SEED&&SEED.profiles&&SEED.profiles.length){SEEDED=true;api({type:"restore",profiles:SEED.profiles,marks:SEED.marks||{}}).catch(()=>{});return}
+ try{if(j.profiles&&j.profiles.length)localStorage.setItem("cs_state",JSON.stringify(j))}catch{}STV=j.v;PROFILES=j.profiles||[];MARKS=j.marks||{};renderFeed();refreshMe();refreshMark();if(!$("who").classList.contains("hide"))renderWho()}
 async function pull(){if(document.hidden)return;try{const r=await fetch("/api/state?t="+Date.now()+(STV?"&v="+encodeURIComponent(STV):""),{cache:"no-store"});if(r.ok)apply(await r.json())}catch{}}
-setInterval(pull,4000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()});
+setInterval(pull,12000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()});
 
 // --- noticias hechas ---
 window.setMark=async(link,on)=>{const id=idOf(link);if(!id||!ME)return;const prev=MARKS[id];
