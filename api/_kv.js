@@ -1,30 +1,37 @@
-// Almacén en Upstash Redis con la misma interfaz que usábamos de Vercel Blob (get/put con etag).
-const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+// Almacén en Supabase (Postgres) con la misma interfaz get/put con versión (etag) que usábamos.
+import postgres from "postgres";
 
 export class BlobPreconditionFailedError extends Error {}
 
-async function cmd(args) {
-  if (!URL_ || !TOKEN) throw new Error("Falta conectar la base de datos (Upstash)");
-  const r = await fetch(URL_, { method: "POST", headers: { authorization: `Bearer ${TOKEN}`, "content-type": "application/json" }, body: JSON.stringify(args) });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok || j.error) throw new Error(j.error || `Base de datos: ${r.status}`);
-  return j.result;
+let sql = null, ready = null;
+function db() {
+  const url = process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING;
+  if (!url) throw new Error("Falta conectar la base de datos (Supabase)");
+  if (!sql) sql = postgres(url.replace(/[?&]sslmode=[^&]*/, ""), { prepare: false, max: 3, idle_timeout: 20, connect_timeout: 10, ssl: /sslmode=disable/.test(url) ? false : { rejectUnauthorized: false } });
+  if (!ready) ready = sql`create table if not exists cs_kv (k text primary key, d text not null, v text not null, updated_at timestamptz default now())`.catch(e => { ready = null; throw e; });
+  return ready.then(() => sql);
 }
-const key = p => "cs:" + p;
+const nv = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
 export async function get(path, opts = {}) {
-  const [data, v] = (await cmd(["HMGET", key(path), "d", "v"])) || [];
-  if (data == null) return null;
-  if (opts.ifNoneMatch && opts.ifNoneMatch === v) return { statusCode: 304 };
-  return { statusCode: 200, blob: { etag: v }, stream: data };
+  const s = await db();
+  const [r] = await s`select d, v from cs_kv where k = ${path}`;
+  if (!r) return null;
+  if (opts.ifNoneMatch && opts.ifNoneMatch === r.v) return { statusCode: 304 };
+  return { statusCode: 200, blob: { etag: r.v }, stream: r.d };
 }
 
-// escribe solo si la versión no ha cambiado (ifMatch), de forma atómica
-const CAS = `local v=redis.call('HGET',KEYS[1],'v') if ARGV[3]=='1' and v and v~=ARGV[1] then return 0 end redis.call('HSET',KEYS[1],'d',ARGV[2],'v',ARGV[4]) return 1`;
 export async function put(path, body, opts = {}) {
-  const nv = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-  const ok = await cmd(["EVAL", CAS, "1", key(path), opts.ifMatch || "", String(body), opts.ifMatch ? "1" : "0", nv]);
-  if (!ok) throw new BlobPreconditionFailedError("cambió");
-  return { etag: nv };
+  const s = await db(), v = nv(), d = String(body);
+  if (opts.ifMatch) {
+    const u = await s`update cs_kv set d = ${d}, v = ${v}, updated_at = now() where k = ${path} and v = ${opts.ifMatch} returning k`;
+    if (u.length) return { etag: v };
+    const [e] = await s`select 1 from cs_kv where k = ${path}`;
+    if (e) throw new BlobPreconditionFailedError("cambió");
+    const i = await s`insert into cs_kv (k, d, v) values (${path}, ${d}, ${v}) on conflict (k) do nothing returning k`;
+    if (!i.length) throw new BlobPreconditionFailedError("cambió");
+    return { etag: v };
+  }
+  await s`insert into cs_kv (k, d, v) values (${path}, ${d}, ${v}) on conflict (k) do update set d = excluded.d, v = excluded.v, updated_at = now()`;
+  return { etag: v };
 }
