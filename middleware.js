@@ -1,22 +1,11 @@
-// Acceso con contraseña. Se recuerda por IP (red de la oficina) y por dispositivo (cookie de 1 año).
-import { next, ipAddress } from "@vercel/functions";
-import { get, put } from "@vercel/blob";
+// Acceso con contraseña: cada dispositivo la pone una vez y queda recordado (cookie de 1 año).
+import { next } from "@vercel/functions";
 
-export const config = { runtime: "nodejs", matcher: ["/((?!assets/|favicon\\.ico).*)"] };
+export const config = { matcher: ["/((?!assets/|favicon\\.ico).*)"] };
 
-const PASS_HASH = "f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae"; // sha256("111")
-const COOKIE = "cs_ok", IPS = "auth/ips.json";
-let cache = { at: 0, ips: [] };
-
-const sha = async s => Buffer.from(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s))).toString("hex");
-const token = () => sha("ciutat-studio:" + PASS_HASH);
-async function ips(fresh) {
-  if (!fresh && Date.now() - cache.at < 60000) return cache.ips;
-  try { const r = await get(IPS, { access: "private", useCache: false }); cache = { at: Date.now(), ips: r ? JSON.parse(await new Response(r.stream).text()) : [] }; }
-  catch { cache.at = Date.now(); }
-  return cache.ips;
-}
-const ipOf = req => ipAddress(req) || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim();
+const PASS_HASH = "f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae"; // sha256 de la contraseña
+const COOKIE = "cs_dev", TOK = "603269ee44f82adeaa87ce1bc268dd7df940ef37058e19a83650c6544b123ba5";
+const sha = async s => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, "0")).join("");
 
 const page = err => `<!doctype html><html lang="ca"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Ciutat Studio</title><link rel="icon" href="/assets/icon.svg"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -53,21 +42,17 @@ footer{position:fixed;bottom:22px;left:0;right:0;text-align:center;font-size:12p
 <button class="go">Entrar<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
 <p class="e" role="alert">${err ? "Contrasenya incorrecta. Torna-ho a provar." : ""}</p></form></main>
 <footer class="up d3">laciutat.cat</footer></body></html>`;
-const html = (s, status = 200, h = {}) => new Response(s, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", ...h } });
+const html = (s, status = 200) => new Response(s, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
 
 export default async function middleware(req) {
-  const url = new URL(req.url), tok = await token();
+  const url = new URL(req.url);
+  const ck = (req.headers.get("cookie") || "").split(/;\s*/).find(c => c.startsWith(COOKIE + "="));
+  if (ck && ck.slice(COOKIE.length + 1) === TOK) return next();
   if (url.pathname === "/__login" && req.method === "POST") {
     const f = await req.formData().catch(() => null);
     if (!f || (await sha(String(f.get("p") || ""))) !== PASS_HASH) return html(page(true), 401);
-    const ip = ipOf(req);
-    if (ip) { try { const l = await ips(true); if (!l.includes(ip)) { l.push(ip); await put(IPS, JSON.stringify(l.slice(-200)), { access: "private", contentType: "application/json", addRandomSuffix: false, allowOverwrite: true }); cache = { at: Date.now(), ips: l }; } } catch {} }
-    return new Response(null, { status: 303, headers: { location: "/", "set-cookie": `${COOKIE}=${tok}; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax` } });
+    return new Response(null, { status: 303, headers: { location: "/", "set-cookie": `${COOKIE}=${TOK}; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax` } });
   }
-  const ck = (req.headers.get("cookie") || "").split(/;\s*/).find(c => c.startsWith(COOKIE + "="));
-  if (ck && ck.slice(COOKIE.length + 1) === tok) return next();
-  const ip = ipOf(req);
-  if (ip && (await ips(false)).includes(ip)) return next({ headers: { "set-cookie": `${COOKIE}=${tok}; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax` } });
   if (url.pathname.startsWith("/api/")) return Response.json({ error: "Acceso restringido" }, { status: 401 });
   return html(page(false));
 }
