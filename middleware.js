@@ -5,6 +5,7 @@ export const config = { matcher: ["/((?!assets/|favicon\\.ico).*)"] };
 
 const PASS_HASH = "f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae"; // sha256 de la contraseña
 const COOKIE = "cs_dev", TOK = "603269ee44f82adeaa87ce1bc268dd7df940ef37058e19a83650c6544b123ba5";
+const OLD_TOK = "c7c8a5f6ea05aa3e8f55ce2575b5c1588eccfc9e7c39bf86c71775ab4de465b1";
 const sha = async s => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, "0")).join("");
 
 const page = err => `<!doctype html><html lang="ca"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Ciutat Studio</title><link rel="icon" href="/assets/icon.svg"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -48,6 +49,8 @@ export default async function middleware(req) {
   const url = new URL(req.url);
   const ck = (req.headers.get("cookie") || "").split(/;\s*/).find(c => c.startsWith(COOKIE + "="));
   if (ck && ck.slice(COOKIE.length + 1) === TOK) return next();
+  const old = (req.headers.get("cookie") || "").split(/;\s*/).find(c => c.startsWith("cs_ok="));
+  if (old && old.slice(6) === OLD_TOK) return next(); // dispositivos que ya pusieron la contraseña antes
   if (url.pathname === "/__login" && req.method === "POST") {
     const f = await req.formData().catch(() => null);
     if (!f || (await sha(String(f.get("p") || ""))) !== PASS_HASH) return html(page(true), 401);
