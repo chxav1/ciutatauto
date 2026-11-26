@@ -155,3 +155,7 @@ window.snd=snd;
  if(PROFILES.length){go();pull().then(()=>{if(me()){setLang(me().lang);refreshMe()}refreshMark()})}
  else{await pull();if(me()){setLang(me().lang);refreshMe()}go()}
  refreshMark()})();
+// al descargar: historia → copia el enlace; post (o las 2) → copia el copy
+(()=>{const clip=(id,msg)=>{const v=($(id).value||"").trim();if(!v||!navigator.clipboard)return;navigator.clipboard.writeText(v).then(()=>setTimeout(()=>toast(tr(msg)),400),()=>{})};
+ const base=dl;dl=(id,n)=>{if(id=="cstory")clip("link","Enlace copiado");else if(id=="cpost")clip("copy","Copy copiado");return base(id,n)};window.dl=dl;
+ const b=$("dlBoth"),both=b.onclick;b.onclick=e=>{if(TT.story)clip($("mode").value=="story"?"link":"copy",$("mode").value=="story"?"Enlace copiado":"Copy copiado");return both.call(b,e)}})();
