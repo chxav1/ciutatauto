@@ -159,7 +159,7 @@ async function pick(x){cur=x.link;resetCfg();renderFeed();$("url").value=x.link;
 async function imageSrc(u){if(!u)return"";try{const r=await fetch("/api/image?url="+encodeURIComponent(u));if(r.ok&&(r.headers.get("content-type")||"").startsWith("image"))return await toDataURL(await r.blob())}catch{}
  return await toDataURL(await viaProxy(u,true))}
 $("ed").onchange=renderFeed;$("frame").onchange=draw;
-$("reload").onclick=loadFeed;loadFeed();setInterval(()=>loadFeed(),15000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadFeed()});
+$("reload").onclick=loadFeed;loadFeed();setInterval(()=>{if(!document.hidden)loadFeed()},60000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadFeed()});
 
 
 // ---- Ciutat Studio · capa de interfaz ----
@@ -270,7 +270,7 @@ let probing=false;async function probe(){if(probing||document.hidden||!ITEMS.len
   const r=await fetch("/api/probe?ids="+ids.join(",")+"&t="+Date.now(),{cache:"no-store"});if(!r.ok||!(r.headers.get("content-type")||"").includes("json"))return;
   const {items}=await r.json();let fresh=0;items.forEach(x=>{if(!LIVE.has(x.id)){LIVE.set(x.id,x);fresh++}});if(fresh)mergeLive(true)}catch{}finally{probing=false}}
 const _lf2=loadFeed;loadFeed=async()=>{await _lf2();mergeLive(false)};
-setInterval(probe,10000);setTimeout(probe,4000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)probe()});
+setInterval(probe,30000);setTimeout(probe,4000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)probe()});
 
 // ---- búsqueda y sonido de aviso ----
 const norm=s=>(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
