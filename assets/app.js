@@ -111,13 +111,15 @@ const FEED="https://laciutat.cat/uploads/feeds/feed_laciutat_ca.xml";let ITEMS=[
 const idOf=l=>+((String(l).match(/_(\d+)_\d+\.html/)||[])[1]||0);
 let MARKS={},PROFILES=[];const markOf=l=>MARKS[idOf(l)]||null,profOf=id=>PROFILES.find(p=>p.id==id)||null;
 const done={has:l=>!!markOf(l),add:l=>window.setMark&&setMark(l,true),delete:l=>window.setMark&&setMark(l,false)};const saveDone=()=>{};
+function showItems(items){ITEMS=items.filter(x=>x.link);const eds=[...new Set(ITEMS.map(x=>x.cats[0]).filter(Boolean))].sort();
+  const s=$("ed"),v=s.value;s.length=1;eds.forEach(e=>s.add(new Option(e,e)));s.value=v;renderFeed()}
+try{const c=JSON.parse(localStorage.getItem("cs_feed")||"null");if(c&&c.length)setTimeout(()=>{if(!ITEMS.length)showItems(c)},0)}catch{}
 async function loadFeed(){try{let items;
   try{const r=await fetch("/api/feed?t="+Date.now(),{cache:"no-store"});if((r.headers.get("content-type")||"").includes("json")&&r.ok)items=(await r.json()).items}catch{}
   if(!items){const d=new DOMParser().parseFromString(await viaProxy(FEED+"?t="+Date.now()),"text/xml");
    items=[...d.querySelectorAll("item")].map(i=>({title:i.querySelector("title")?.textContent.trim(),link:i.querySelector("link")?.textContent.trim(),date:i.querySelector("pubDate")?.textContent,sub:(i.querySelector("description")?.textContent||"").trim(),cats:[...i.querySelectorAll("category")].map(c=>c.textContent.trim()),img:i.querySelector("enclosure")?.getAttribute("url")||""}))}
-  ITEMS=items.filter(x=>x.link);const eds=[...new Set(ITEMS.map(x=>x.cats[0]).filter(Boolean))].sort();
-  const s=$("ed"),v=s.value;s.length=1;eds.forEach(e=>s.add(new Option(e,e)));s.value=v;
-  $("upd").textContent="Actualizado "+new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});renderFeed()}
+  try{localStorage.setItem("cs_feed",JSON.stringify(items.slice(0,60)))}catch{}showItems(items);
+  $("upd").textContent="Actualizado "+new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"})}
  catch(e){$("feed").innerHTML='<p class="mut">No se pudo cargar la lista. Reintentando…</p>'}}
 const imgURL=u=>u?"https://images.weserv.nl/?w=140&h=140&fit=cover&url="+encodeURIComponent(u):"";
 const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -156,7 +158,9 @@ $("reload").onclick=loadFeed;loadFeed();setInterval(()=>loadFeed(),15000);docume
 
 
 // ---- Ciutat Studio · capa de interfaz ----
-setTimeout(()=>{$("intro").classList.add("out");document.body.classList.add("enter");setTimeout(()=>{$("intro").remove();document.body.classList.remove("enter")},750)},2150);
+(()=>{let seen=false;try{seen=!!sessionStorage.getItem("cs_in");sessionStorage.setItem("cs_in","1")}catch{}
+ if(seen){$("intro").remove();return}
+ setTimeout(()=>{$("intro").classList.add("out");document.body.classList.add("enter");setTimeout(()=>{$("intro").remove();document.body.classList.remove("enter")},650)},1150)})();
 function toast(m){const t=$("toast");t.querySelector("span").textContent=m;t.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("on"),1800)}
 const _draw=draw;draw=async(...a)=>{const r=$("res");r.classList.add("busyc");try{return await _draw(...a)}finally{r.classList.remove("busyc");$("htitle").textContent=$("title").value}};
 const _dl=dl;dl=(id,n)=>{_dl(id,n);toast(n=="POST"?"Post descargado":"Historia descargada")};

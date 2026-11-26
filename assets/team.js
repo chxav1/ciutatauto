@@ -1,14 +1,14 @@
 // ===== Equipo: perfiles tipo Netflix, estado compartido (noticias hechas), idioma y guardado en la galería =====
 const PALETTE=[["#2563eb","Azul","Blau"],["#0ea5e9","Celeste","Cel"],["#0d9488","Turquesa","Turquesa"],["#16a34a","Verde","Verd"],["#84cc16","Lima","Llima"],["#eab308","Amarillo","Groc"],["#f97316","Naranja","Taronja"],
  ["#dc2626","Rojo","Vermell"],["#db2777","Rosa","Rosa"],["#c026d3","Fucsia","Fúcsia"],["#7c3aed","Violeta","Violeta"],["#0f172a","Noche","Nit"],["#78716c","Piedra","Pedra"],["#92400e","Marrón","Marró"]];
-const ME_KEY="cs_me";let ME=null,STV=null,editing=false,peColor=null,peLang="es",peId=null;
+const ME_KEY="cs_me";let ME=null,STV=null,editing=false,peColor=null,peLang="ca",peId=null;
 const ini=n=>(n||"?").trim().charAt(0).toUpperCase();
 const cdist=(a,b)=>{const c=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const [r1,g1,b1]=c(a),[r2,g2,b2]=c(b),rm=(r1+r2)/2;return Math.sqrt((2+rm/256)*(r1-r2)**2+4*(g1-g2)**2+(2+(255-rm)/256)*(b1-b2)**2)};
 const me=()=>PROFILES.find(p=>p.id==ME)||null;
 
 // --- servidor ---
 async function api(op){const r=await fetch("/api/state",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(op)});const j=await r.json().catch(()=>({error:"Sin conexión con el servidor"}));if(!r.ok)throw new Error(j.error||"Error");apply(j);return j}
-function apply(j){if(!j||j.same)return;STV=j.v;PROFILES=j.profiles||[];MARKS=j.marks||{};renderFeed();refreshMe();refreshMark();if(!$("who").classList.contains("hide"))renderWho()}
+function apply(j){if(!j||j.same)return;try{localStorage.setItem("cs_state",JSON.stringify(j))}catch{}STV=j.v;PROFILES=j.profiles||[];MARKS=j.marks||{};renderFeed();refreshMe();refreshMark();if(!$("who").classList.contains("hide"))renderWho()}
 async function pull(){if(document.hidden)return;try{const r=await fetch("/api/state?t="+Date.now()+(STV?"&v="+encodeURIComponent(STV):""),{cache:"no-store"});if(r.ok)apply(await r.json())}catch{}}
 setInterval(pull,4000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()});
 
@@ -41,7 +41,7 @@ function renderWho(){const g=$("whoGrid");$("who").classList.toggle("editing",ed
  $("whoEdit").textContent=tr(editing?"Listo":"Gestionar perfiles");$("whoEdit").classList.toggle("hide",!PROFILES.length)}
 const HI={es:{m:["Buenos días","Bon dia por aquí","Buenos días, equipo","Arrancamos la mañana","Café en mano y a por ello","Buenos días, que hay noticias","Mañana nueva, posts nuevos","Hoy toca contar Tarragona"],t:["Buenas tardes","Buenas tardes, equipo","Seguimos con la tarde","La tarde también tiene noticias","Un último empujón","Vamos a por la tarde"],n:["Buenas noches","Turno de noche, qué cracks","Todavía por aquí","Última ronda de noticias","La noche también informa"],a:["Qué alegría verte","Hola de nuevo","Listos para publicar","Que no se escape ninguna noticia","Hoy va a quedar todo muy bonito","A por un buen día de redes","Las historias no se suben solas","Hagamos que se lea todo"]},
  ca:{m:["Bon dia","Bon dia, equip","Comencem el matí","Cafè a la mà i som-hi","Bon dia, que hi ha notícies","Matí nou, posts nous","Avui toca explicar Tarragona"],t:["Bona tarda","Bona tarda, equip","Seguim amb la tarda","La tarda també té notícies","Una última empenta"],n:["Bona nit","Torn de nit, quins cracks","Encara per aquí","Última ronda de notícies"],a:["Quina alegria veure't","Hola de nou","A punt per publicar","Que no se n'escapi cap notícia","Avui quedarà tot molt bonic","Les històries no es pugen soles"]}};
-function greet(){let l="es";try{const id=localStorage.getItem(ME_KEY),p=PROFILES.find(x=>x.id==id);if(p)l=p.lang;else if(document.documentElement.lang=="ca")l="ca"}catch{}
+function greet(){let l="ca";try{const id=localStorage.getItem(ME_KEY),p=PROFILES.find(x=>x.id==id);if(p)l=p.lang;else if(document.documentElement.lang=="es")l="es"}catch{}
  const h=new Date().getHours(),k=h>=6&&h<14?"m":h>=14&&h<21?"t":"n",L=HI[l]||HI.es,pool=[...L[k],...L[k],...L.a];let t;
  t=null;try{const last=sessionStorage.getItem("cs_hi");do t=pool[Math.random()*pool.length|0];while(t==last&&pool.length>1);sessionStorage.setItem("cs_hi",t)}catch{t=pool[0]}
  t=(l=="es"?"¡":"")+t+"!";
@@ -150,4 +150,8 @@ window.snd=snd;
 {const _sf=shareFiles;shareFiles=async f=>{const r=await _sf(f);if(r)snd("save");return r};}
 
 // --- inicio ---
-(async()=>{try{ME=localStorage.getItem(ME_KEY)}catch{}await pull();if(me()){setLang(me().lang);refreshMe()}setTimeout(openWho,1700);refreshMark()})();
+(async()=>{let fast=false;try{ME=localStorage.getItem(ME_KEY);fast=!!sessionStorage.getItem("cs_in");const c=JSON.parse(localStorage.getItem("cs_state")||"null");if(c){STV=null;PROFILES=c.profiles||[];MARKS=c.marks||{};if(me()){setLang(me().lang);refreshMe()}}}catch{}if(!me())setLang("ca");
+ const t0=Date.now(),wait=fast?0:800;const go=()=>setTimeout(openWho,Math.max(0,wait-(Date.now()-t0)));
+ if(PROFILES.length){go();pull().then(()=>{if(me()){setLang(me().lang);refreshMe()}refreshMark()})}
+ else{await pull();if(me()){setLang(me().lang);refreshMe()}go()}
+ refreshMark()})();

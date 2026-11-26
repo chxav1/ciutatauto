@@ -612,3 +612,6 @@ body.touring{overflow:hidden}
 html[data-theme=dark] .btn.pri:hover{background:#cc0070}html[data-theme=dark] .btn.danger:hover{background:#b91c1c}html[data-theme=dark] .btn.line:hover{background:var(--field)}
 @media(hover:none){.btn.pri:hover,html[data-theme=dark] .btn.pri:hover{background:var(--p)}.btn:active{transform:scale(.97)}}
 .tabs button{display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}.tabs .tbadge{margin:0}
+#intro .c0{animation-duration:.45s}#intro .c1{animation-delay:.2s}#intro .c2{animation-delay:.3s;animation-duration:.45s}
+#intro .word{animation-delay:.4s;animation-duration:.5s}#intro .bar{animation-delay:.5s}#intro .bar i{animation-delay:.5s;animation-duration:.6s}
+#intro .sub{animation-delay:.6s}#intro.out,#intro.out:before{animation-duration:.6s}
