@@ -270,7 +270,7 @@ let probing=false;async function probe(){if(probing||document.hidden||!ITEMS.len
   const r=await fetch("/api/probe?ids="+ids.join(",")+"&t="+Date.now(),{cache:"no-store"});if(!r.ok||!(r.headers.get("content-type")||"").includes("json"))return;
   const {items}=await r.json();let fresh=0;items.forEach(x=>{if(!LIVE.has(x.id)){LIVE.set(x.id,x);fresh++}});if(fresh)mergeLive(true)}catch{}finally{probing=false}}
 const _lf2=loadFeed;loadFeed=async()=>{await _lf2();mergeLive(false)};
-setInterval(probe,30000);setTimeout(probe,4000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)probe()});
+setInterval(probe,15000);setTimeout(probe,4000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)probe()});
 
 // ---- búsqueda y sonido de aviso ----
 const norm=s=>(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();

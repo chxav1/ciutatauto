@@ -16,7 +16,7 @@ function take(j){if(!j||j.same)return;NV=j.v;const old=new Set(NOTES.map(n=>n.id
  if(!first&&ME)for(const n of NOTES)if(!old.has(n.id)&&!seen.has(n.id)&&n.by!=ME&&(!n.to||n.to==ME)){seen.add(n.id);toast(`${tr("Nueva nota de")} ${P(n.by)?.name||"?"}`);window.snd&&snd("done")}
  first=false;badge();if(document.body.classList.contains("notesmode"))draw()}
 async function pull(){if(document.hidden&&!first)return;try{const r=await fetch("/api/notes?t="+Date.now()+(NV?"&v="+encodeURIComponent(NV):""),{cache:"no-store"});if(r.ok)take(await r.json())}catch{}}
-setInterval(()=>{if(!document.hidden)pull()},30000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()});setTimeout(pull,800);
+setInterval(()=>{if(!document.hidden&&!window.RT_ON)pull()},20000);setInterval(()=>{if(!document.hidden)pull()},120000);document.addEventListener("rt",e=>{const k=e.detail;if(k=="*"||k.startsWith("notes"))pull()});document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()});setTimeout(pull,800);
 
 const isOpen=n=>!n.done,mine=n=>n.to&&n.to==ME,forMe=n=>!n.to||n.to==ME;
 const late=n=>n.due&&n.due<Date.now()&&isOpen(n);
