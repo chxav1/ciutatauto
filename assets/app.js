@@ -193,21 +193,24 @@ let baseQ=0;const _render=render;render=async(k,cv,o)=>{const r=await _render(k,
 $("dlsLabel").textContent="Descargar historia (vídeo)";
 function save(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 let MUX=null;const getMux=()=>MUX||(MUX=import("https://cdn.jsdelivr.net/npm/mp4-muxer@5/+esm"));setTimeout(()=>getMux().catch(()=>MUX=null),2500);
-let VCFG=null;async function encCfg(W,H){if(VCFG)return VCFG;
- for(const hw of ["prefer-hardware","no-preference"])for(const codec of ["avc1.640028","avc1.4d0028","avc1.42003e"]){const k={codec,width:W,height:H,bitrate:8e6,framerate:VID.fps,latencyMode:"realtime",hardwareAcceleration:hw,avc:{format:"avc"}};
-  try{if((await VideoEncoder.isConfigSupported(k)).supported)return VCFG=k}catch{}}return null}
+// configuraciones H.264 que el navegador dice soportar (las que fallen al codificar se descartan)
+let VCFGS=null;const VBAD=new Set();async function encCfgs(W,H){if(VCFGS)return VCFGS.filter(k=>!VBAD.has(k));VCFGS=[];
+ for(const hw of ["prefer-hardware","no-preference","prefer-software"])for(const codec of ["avc1.640028","avc1.4d0028","avc1.640033","avc1.42003e","avc1.42E033"])for(const lm of ["realtime","quality"]){
+  const k={codec,width:W,height:H,bitrate:8e6,framerate:VID.fps,latencyMode:lm,hardwareAcceleration:hw,avc:{format:"avc"}};
+  try{if((await VideoEncoder.isConfigSupported(k)).supported){VCFGS.push(k);if(VCFGS.length>=4)return VCFGS}}catch{}}
+ return VCFGS}
 let VTOK=0,VJOB=null,VPROG=0;
 // exporta el vídeo; si cambia algo a mitad (tok), se cancela
 async function exportMP4(tok=VTOK,show=true){const W=1080,H=1920,cv=document.createElement("canvas");cv.width=W;cv.height=H;const c=cv.getContext("2d",{willReadFrequently:false}),pr=$("vprog");
  const step=f=>{VPROG=f;if(show){pr.classList.add("on");pr.firstElementChild.style.width=(f*100).toFixed(1)+"%"}};const live=()=>{if(tok!==VTOK)throw new Error("cancel")};
  try{
-  if(window.VideoEncoder){const [{Muxer,ArrayBufferTarget},cfg]=await Promise.all([getMux(),encCfg(W,H)]);
-   if(cfg){const mux=new Muxer({target:new ArrayBufferTarget(),video:{codec:"avc",width:W,height:H,frameRate:VID.fps},fastStart:"in-memory"});
+  if(window.VideoEncoder&&window.VideoFrame){let MX=null,cfgs=[];try{[MX,cfgs]=await Promise.all([getMux(),encCfgs(W,H)])}catch{}
+   for(const cfg of cfgs){if(!MX)break;const {Muxer,ArrayBufferTarget}=MX;try{const mux=new Muxer({target:new ArrayBufferTarget(),video:{codec:"avc",width:W,height:H,frameRate:VID.fps},fastStart:"in-memory"});
     let err=null;const enc=new VideoEncoder({output:(ch,m)=>mux.addVideoChunk(ch,m),error:e=>err=e});enc.configure(cfg);
     try{for(let n=0;n<VID.frames;n++){live();frameAt(c,n);const vf=new VideoFrame(cv,{timestamp:Math.round(n*1e6/VID.fps),duration:Math.round(1e6/VID.fps)});enc.encode(vf,{keyFrame:n%90==0});vf.close();
       if(enc.encodeQueueSize>24)await new Promise(r=>enc.addEventListener("dequeue",r,{once:true}));if(n%12==0)step(n/VID.frames);if(err)throw err}
      await enc.flush();}finally{if(enc.state!="closed")enc.close()}
-    mux.finalize();step(1);return new Blob([mux.target.buffer],{type:"video/mp4"})}}
+    mux.finalize();step(1);return new Blob([mux.target.buffer],{type:"video/mp4"})}catch(e){if(e&&e.message=="cancel")throw e;VBAD.add(cfg);console.warn("encoder falló, pruebo otro",e)}}}
   const types=["video/mp4;codecs=avc1","video/mp4","video/webm;codecs=vp9","video/webm"],type=types.find(x=>window.MediaRecorder&&MediaRecorder.isTypeSupported(x));
   if(!type)throw new Error("Este navegador no puede crear vídeo");
   const st=cv.captureStream(VID.fps),rec=new MediaRecorder(st,{mimeType:type,videoBitsPerSecond:8e6}),parts=[];rec.ondataavailable=e=>parts.push(e.data);
